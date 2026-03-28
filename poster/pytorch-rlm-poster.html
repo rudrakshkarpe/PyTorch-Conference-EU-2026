@@ -124,7 +124,40 @@
     </div>
   </div>
   <div class="body">
-    <div class="col"><div class="section"><div class="section-title">Column 1</div><p>Content coming soon.</p></div></div>
+    <div class="col">
+
+      <div class="section">
+        <div class="section-title">Overview</div>
+        <p>
+          Recursive Language Models (RLMs), developed at MIT CSAIL, enable any LLM to process <strong>10M+ tokens</strong> without retraining. An RLM is a thin wrapper around a language model: from the user's perspective, <code>rlm.completion(messages)</code> is a drop-in replacement for <code>gpt5.completion(messages)</code>. Under the hood, the prompt lives as data in an external <strong>Python REPL</strong> and the model writes code to peek, chunk, grep, and recursively call itself on smaller slices.
+        </p>
+        <p style="margin-top:4px;">
+          Unlike agents that decompose by <em>task</em>, RLMs decompose by <em>context</em> - the LM decides how to break down its input. <strong>RLM(GPT-5-mini)</strong> outperforms GPT-5 by <strong>+114%</strong> on OOLONG at comparable cost. <strong>RLM-Qwen3-8B</strong>, a post-trained open model, achieves <strong>+28.3%</strong> median gain over its base.
+        </p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Motivation</div>
+        <ul>
+          <li><strong>Context rot is real.</strong> As conversation length grows, models get measurably worse - even within their context window. On OOLONG, GPT-5 scores drop as context doubles from 132K to 263K tokens.</li>
+          <li>Summarization heuristics assume early context is forgettable - wrong for tasks needing &Omega;(|P|) work (e.g. counting, labeling thousands of entries).</li>
+          <li><strong>No symbolic handle:</strong> the prompt exists only as tokens inside the model - no way to index, slice, grep, or loop over it programmatically.</li>
+          <li><strong>Verbal sub-delegation:</strong> prior agent scaffolds verbalize a few sub-tasks; they cannot launch &Omega;(|P|) programmatic sub-calls in a tight loop.</li>
+          <li><strong>Output bounded by K:</strong> direct generation cannot produce responses longer than the context window.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title blue">Core Idea</div>
+        <p>An RLM makes three design choices missing from existing scaffolds:</p>
+        <ol>
+          <li><strong>Prompt as environment data.</strong> The full prompt P lives <em>outside</em> the transformer as a variable in a persistent Python REPL.</li>
+          <li><strong>Constant-size root context.</strong> The root language model sees only short metadata (length, prefix, stdout summaries) - never the raw prompt tokens.</li>
+          <li><strong>Symbolic recursion.</strong> The model writes Python that peeks, chunks, searches, and calls <code>sub_RLM(&hellip;)</code> inside loops. When <code>Final</code> is set in the REPL, iteration stops and its value is returned.</li>
+        </ol>
+      </div>
+
+    </div>
     <div class="col"><div class="section"><div class="section-title">Column 2</div><p>Content coming soon.</p></div></div>
     <div class="col"><div class="section"><div class="section-title">Column 3</div><p>Content coming soon.</p></div></div>
   </div>
