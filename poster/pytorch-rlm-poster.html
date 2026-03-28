@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RLMs — Poster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a1a2e;
+      --heading: #0f1b35;
+      --body: #2c3e50;
+      --muted: #6c7a89;
+      --accent: #1b3a5c;
+      --accent-light: #2a5580;
+      --blue: #1b3a5c;
+      --border: #d1d5db;
+      --bg: #ffffff;
+      --surface: #f8f9fa;
+      --green: #1a7a3a;
+      --red: #c0392b;
+      --torch-orange: #ee4c2c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e5e7eb;
+      font-family: "Inter", system-ui, sans-serif;
+      color: var(--body);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    code { font-family: "JetBrains Mono", monospace; font-size: .88em; background: #f0f0f0; padding: 1px 4px; border-radius: 2px; }
+
+    .poster {
+      width: min(100vw - 16px, 1580px);
+      margin: 8px auto;
+      background: var(--bg);
+      box-shadow: 0 4px 20px rgba(0,0,0,.12);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background: #1a2744;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .header .center { flex: 1; text-align: center; z-index: 1; min-width: 0; }
+    .header h1 { font-size: clamp(15px, 1.55vw, 21px); font-weight: 800; line-height: 1.22; letter-spacing: -.01em; }
+    .header .authors { font-size: 10.5px; margin-top: 4px; opacity: .95; font-weight: 600; }
+    .header .affiliations { font-size: 9px; margin-top: 2px; opacity: .78; }
+
+    .body {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr 1fr;
+      gap: 0;
+      padding: 0;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .col { padding: 12px 16px 14px; border-right: 1.5px solid var(--border); overflow: hidden; }
+    .col:last-child { border-right: none; }
+
+    .section { margin-bottom: 8px; }
+    .section:last-child { margin-bottom: 0; }
+
+    .section-title {
+      font-size: 12px; font-weight: 800; text-transform: uppercase;
+      color: var(--accent); letter-spacing: .04em;
+      padding-bottom: 3px; border-bottom: 2px solid var(--accent); margin-bottom: 6px;
+    }
+    .section-title.blue { color: var(--blue); border-bottom-color: var(--blue); }
+
+    h3 { font-size: 11px; font-weight: 700; color: var(--heading); margin: 6px 0 3px; }
+    h3:first-child { margin-top: 0; }
+    p, li { font-size: 10px; line-height: 1.45; color: var(--body); }
+    ul, ol { padding-left: 14px; margin: 3px 0 6px; }
+    li { margin-bottom: 2px; }
+    strong { color: var(--ink); }
+
+    .footer {
+      border-top: 1.5px solid var(--border);
+      padding: 6px 16px;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      flex-shrink: 0;
+    }
+    .footer .refs { font-size: 8.5px; line-height: 1.4; color: var(--muted); flex: 1; }
+    .footer .refs strong { color: var(--heading); font-size: 9px; }
+    .footer .refs a { color: var(--blue); text-decoration: none; }
+  </style>
+</head>
+<body>
+<div class="poster">
+  <div class="header">
+    <div class="center">
+      <h1>Recursive Language Models (RLMs): Scaling to Infinite Context<br>via Programmatic Decomposition</h1>
+      <div class="authors">Rudraksh Karpe &nbsp;&nbsp; Shivay Lamba</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="col"><div class="section"><div class="section-title">Column 1</div><p>Content coming soon.</p></div></div>
+    <div class="col"><div class="section"><div class="section-title">Column 2</div><p>Content coming soon.</p></div></div>
+    <div class="col"><div class="section"><div class="section-title">Column 3</div><p>Content coming soon.</p></div></div>
+  </div>
+  <div class="footer">
+    <div class="refs"><strong>References</strong><br>[1] A. L. Zhang et al. "Recursive Language Models." arXiv 2512.24601v2, 2025.</div>
+  </div>
+</div>
+</body>
+</html>
