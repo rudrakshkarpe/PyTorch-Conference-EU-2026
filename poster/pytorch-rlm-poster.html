@@ -116,6 +116,17 @@
     .note { font-size: 9px; color: var(--muted); line-height: 1.4; margin-top: 4px; }
     svg.arch { width: 100%; height: auto; display: block; }
 
+    .stack { display: flex; flex-direction: column; gap: 0; }
+    .stack-row { display: flex; align-items: stretch; border: 1px solid var(--border); border-bottom: none; font-size: 9.5px; line-height: 1.35; }
+    .stack-row:last-child { border-bottom: 1px solid var(--border); }
+    .stack-tag { flex: 0 0 78px; min-width: 78px; max-width: 78px; padding: 4px 5px; font-size: 7px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .stack-desc { flex: 1; padding: 4px 6px; }
+    .tag-repl { background: #d4edda; color: #155724; }
+    .tag-orch { background: #fff3cd; color: #856404; }
+    .tag-torch { background: #cce5ff; color: #004085; }
+    .tag-train { background: #fde8d0; color: #b45309; }
+
+
 
   </style>
 </head>
@@ -250,6 +261,53 @@
             </svg>
           </div>
         </div>
+      </div>
+
+
+      <div class="section">
+        <h3>Where PyTorch Fits in the Stack</h3>
+        <p>The recursive control flow is <em>programmatic</em> (Python), not neural. <strong>PyTorch powers the language model</strong> - every root step and every sub-call is one autoregressive <code>generate()</code> pass on GPU.</p>
+
+        <div class="figure">
+          <div class="fig-caption">System stack - where PyTorch sits</div>
+          <div class="fig-body">
+            <div class="stack">
+              <div class="stack-row">
+                <div class="stack-tag tag-repl">REPL</div>
+                <div class="stack-desc">Persistent Python env. Stores P as a variable, intermediate chunks, <code>sub_RLM()</code> hook, stdout buffer.</div>
+              </div>
+              <div class="stack-row">
+                <div class="stack-tag tag-orch">Orchestrator</div>
+                <div class="stack-desc">RLM loop: assemble <code>hist</code> (constant-size metadata only) &rarr; call the language model &rarr; execute returned code &rarr; trim stdout &rarr; repeat.</div>
+              </div>
+              <div class="stack-row">
+                <div class="stack-tag tag-torch">PyTorch</div>
+                <div class="stack-desc"><code>transformers</code> / vLLM / TGI load <strong>Qwen3-8B</strong> or <strong>RLM-Qwen3-8B</strong> weights. Each root step &amp; each sub-call = one <code>model.generate()</code> on H100 GPU.</div>
+              </div>
+              <div class="stack-row">
+                <div class="stack-tag tag-train">Training</div>
+                <div class="stack-desc">SFT via <strong>prime-rl</strong> (PyTorch): distill 1K filtered trajectories from Qwen3-Coder-480B RLM &rarr; <strong>RLM-Qwen3-8B</strong>. ~48 H100-hours.</div>
+              </div>
+            </div>
+            <p class="note" style="margin-top:6px;"><strong>Key distinction:</strong> recursion = program control flow in the REPL, not extra transformer layers. PyTorch handles the language model&rsquo;s inference and the SFT training loop.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title blue">Emergent RLM Strategies</div>
+        <p>Without explicit training, RLMs discover reusable patterns for handling long context:</p>
+        <table class="cmp-table" style="margin-top:4px;">
+          <thead><tr><th style="min-width:54px;">Strategy</th><th>What the Root LM Does</th><th>When Used</th></tr></thead>
+          <tbody>
+            <tr><td>Peeking</td><td>Reads first N chars to discover structure</td><td>Start of every RLM call</td></tr>
+            <tr><td>Grepping</td><td>Regex / keyword search to narrow lines</td><td>Needle-in-haystack, filtering</td></tr>
+            <tr><td>Partition + Map</td><td>Chunks context, sub_RLM() per chunk</td><td>Dense labeling, counting</td></tr>
+            <tr><td>Summarize</td><td>Condenses sub-call outputs to aggregate</td><td>Multi-hop reasoning</td></tr>
+            <tr><td>Programmatic</td><td>Writes code to process diffs / compute</td><td>Long-output tasks</td></tr>
+          </tbody>
+        </table>
+        <p class="note">These strategies compose: peek first, grep to filter, then partition + map sub-calls over filtered slices.</p>
       </div>
 
     </div>
