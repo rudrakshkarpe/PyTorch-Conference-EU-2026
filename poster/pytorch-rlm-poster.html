@@ -110,6 +110,13 @@
     .cmp-table tr:last-child { background: #eef6ee; }
     .cmp-table tr:last-child td { font-weight: 600; }
 
+    .figure { border: 1.5px solid var(--border); border-radius: 4px; margin: 6px 0; overflow: hidden; }
+    .fig-caption { background: var(--surface); padding: 4px 10px; font-size: 9px; font-weight: 700; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .fig-body { padding: 8px; }
+    .note { font-size: 9px; color: var(--muted); line-height: 1.4; margin-top: 4px; }
+    svg.arch { width: 100%; height: auto; display: block; }
+
+
   </style>
 </head>
 <body>
@@ -168,7 +175,84 @@
       </div>
 
     </div>
-    <div class="col"><div class="section"><div class="section-title">Column 2</div><p>Content coming soon.</p></div></div>
+    <div class="col">
+
+      <div class="section">
+        <div class="section-title">Architecture &amp; Methods</div>
+        <p>
+          Given prompt P, an RLM initialises a Python REPL with P as a variable and a <code>sub_RLM()</code> hook. The loop: model generates code &rarr; REPL executes &rarr; constant-size metadata returns &rarr; repeat until <code>Final</code> is set.
+        </p>
+
+        <div class="figure" style="margin-top:6px;">
+          <div class="fig-caption">RLM inference loop - architecture view</div>
+          <div class="fig-body" style="padding:4px 2px;">
+            <svg class="arch" viewBox="0 0 440 192">
+              <defs>
+                <marker id="fl" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><polygon points="0 0,7 3,0 6" fill="#4a5d6e"/></marker>
+                <marker id="fy" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><polygon points="0 0,7 3,0 6" fill="#1a7a3a"/></marker>
+                <marker id="fn" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><polygon points="0 0,7 3,0 6" fill="#c0392b"/></marker>
+              </defs>
+
+              <rect x="14" y="2" width="155" height="22" rx="3" fill="#fff0f0" stroke="#c0392b" stroke-dasharray="4 2"/>
+              <text x="91" y="11" text-anchor="middle" font-size="7" font-weight="700" fill="#c0392b">&#x2460; User Prompt P</text>
+              <text x="91" y="20" text-anchor="middle" font-size="5.5" fill="#6c7a89">potentially millions of tokens</text>
+              <path d="M 91 26 V 37" stroke="#4a5d6e" stroke-width="1" fill="none" marker-end="url(#fl)"/>
+
+              <rect x="14" y="39" width="175" height="98" rx="5" fill="#d4edda" stroke="#1a7a3a" stroke-width="1.3"/>
+              <text x="101" y="52" text-anchor="middle" font-size="8" font-weight="700" fill="#155724">PYTHON REPL ENVIRONMENT</text>
+              <line x1="24" y1="56" x2="179" y2="56" stroke="#1a7a3a" stroke-width=".4" opacity=".35"/>
+              <text x="24" y="67" font-size="6.5" fill="#1a1a2e">&#8226; P stored as string variable</text>
+              <text x="24" y="78" font-size="6.5" fill="#1a1a2e">&#8226; sub_RLM(query, slice) registered</text>
+              <text x="24" y="89" font-size="6.5" fill="#1a1a2e">&#8226; Executes generated Python code</text>
+              <text x="24" y="100" font-size="6.5" fill="#1a1a2e">&#8226; stdout buffer (trimmed to metadata)</text>
+              <text x="24" y="111" font-size="6.5" fill="#1a1a2e">&#8226; Sets Final when answer is ready</text>
+              <text x="24" y="131" font-size="5.5" font-weight="600" fill="#155724" font-style="italic">Root LM never sees raw prompt tokens</text>
+
+              <rect x="251" y="39" width="175" height="98" rx="5" fill="#cce5ff" stroke="#004085" stroke-width="1.3"/>
+              <text x="338" y="52" text-anchor="middle" font-size="8" font-weight="700" fill="#004085">PYTORCH &#183; LANGUAGE MODEL</text>
+              <line x1="261" y1="56" x2="416" y2="56" stroke="#004085" stroke-width=".4" opacity=".35"/>
+              <text x="261" y="67" font-size="6.5" fill="#1a1a2e">&#8226; model.generate(hist)</text>
+              <text x="261" y="78" font-size="6.5" fill="#1a1a2e">&#8226; Qwen3-8B / RLM-Qwen3-8B</text>
+              <text x="261" y="89" font-size="6.5" fill="#1a1a2e">&#8226; H100 GPU &#183; vLLM / TGI</text>
+              <text x="261" y="100" font-size="6.5" fill="#1a1a2e">&#8226; Returns Python code blocks</text>
+              <text x="261" y="111" font-size="6.5" fill="#1a1a2e">&#8226; Never sees full prompt P</text>
+              <text x="261" y="131" font-size="5.5" font-weight="600" fill="#004085" font-style="italic">Each call = one autoregressive pass</text>
+
+              <path d="M 191 72 H 249" stroke="#4a5d6e" stroke-width="1.3" fill="none" marker-end="url(#fl)"/>
+              <text x="220" y="66" text-anchor="middle" font-size="6" font-weight="700" fill="#0f1b35">&#x2461; metadata</text>
+              <text x="220" y="80" text-anchor="middle" font-size="5.5" fill="#6c7a89">constant-size hist</text>
+
+              <path d="M 249 108 H 191" stroke="#4a5d6e" stroke-width="1.3" fill="none" marker-end="url(#fl)"/>
+              <text x="220" y="102" text-anchor="middle" font-size="6" font-weight="700" fill="#0f1b35">&#x2462; Python code</text>
+              <text x="220" y="116" text-anchor="middle" font-size="5.5" fill="#6c7a89">to execute in REPL</text>
+
+              <rect x="206" y="84" width="28" height="13" rx="6" fill="#1b3a5c"/>
+              <text x="220" y="93" text-anchor="middle" font-size="6" font-weight="700" fill="#fff">LOOP</text>
+
+              <path d="M 101 139 V 150" stroke="#4a5d6e" stroke-width="1" fill="none" marker-end="url(#fl)"/>
+
+              <rect x="34" y="152" width="134" height="18" rx="9" fill="#fff" stroke="#1b3a5c" stroke-width="1.2"/>
+              <text x="101" y="164" text-anchor="middle" font-size="7" font-weight="700" fill="#1b3a5c">&#x2463; Final set in REPL?</text>
+
+              <path d="M 170 161 H 188" stroke="#1a7a3a" stroke-width="1.2" fill="none" marker-end="url(#fy)"/>
+              <text x="179" y="155" font-size="5.5" font-weight="700" fill="#1a7a3a">Yes</text>
+              <rect x="190" y="152" width="72" height="18" rx="3" fill="#d4edda" stroke="#1a7a3a"/>
+              <text x="226" y="164" text-anchor="middle" font-size="7" font-weight="700" fill="#155724">&#x2464; OUTPUT</text>
+
+              <path d="M 34 161 L 8 161 L 8 48 L 12 48" stroke="#c0392b" stroke-width="1.2" fill="none" marker-end="url(#fn)" stroke-dasharray="4 2"/>
+              <text x="4" y="108" text-anchor="middle" font-size="6" font-weight="700" fill="#c0392b" transform="rotate(-90,4,108)">No &#8594; repeat &#x2461;</text>
+
+              <rect x="280" y="148" width="148" height="38" rx="3" fill="#fde8d0" stroke="#b45309" stroke-dasharray="3 2"/>
+              <text x="354" y="160" text-anchor="middle" font-size="6.5" font-weight="700" fill="#b45309">sub_RLM() recursive calls</text>
+              <text x="354" y="170" text-anchor="middle" font-size="6" fill="#6c7a89">REPL code can spawn sub-calls</text>
+              <text x="354" y="180" text-anchor="middle" font-size="6" fill="#6c7a89">in for-loops &#8594; many GPU passes</text>
+              <path d="M 191 120 Q 230 148 278 162" stroke="#b45309" stroke-width=".8" fill="none" stroke-dasharray="3 2"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
     <div class="col"><div class="section"><div class="section-title">Column 3</div><p>Content coming soon.</p></div></div>
   </div>
   <div class="footer">
