@@ -126,6 +126,15 @@
     .tag-torch { background: #cce5ff; color: #004085; }
     .tag-train { background: #fde8d0; color: #b45309; }
 
+    th, td { border: 1px solid var(--border); padding: 3px 5px; text-align: center; }
+    th { background: var(--surface); font-weight: 700; font-size: 8.5px; color: var(--heading); }
+    td:first-child { text-align: left; font-weight: 600; }
+    .best { font-weight: 700; color: var(--green); }
+    .dim { color: var(--muted); }
+    table { width: 100%; font-size: 9px; border-collapse: collapse; margin: 6px 0; }
+    hr.sec-sep { border: none; border-top: 1px solid var(--border); margin: 5px 0; }
+
+
 
 
   </style>
@@ -311,7 +320,39 @@
       </div>
 
     </div>
-    <div class="col"><div class="section"><div class="section-title">Column 3</div><p>Content coming soon.</p></div></div>
+    <div class="col">
+
+      <div class="section">
+        <div class="section-title">Results Overview</div>
+        <p>
+          Comparison across four tasks of increasing complexity (Table 1). On OOLONG at 132K tokens, <strong>RLM(GPT-5-mini) outperforms GPT-5 by +34 points (+114%)</strong> while costing roughly the same per query. At 1000 documents on BrowseComp-Plus, RLM(GPT-5) achieves <strong>perfect accuracy</strong> while all base models degrade.
+        </p>
+
+        <h3>GPT-5 Results (paper; sub-calls to GPT-5-mini)</h3>
+        <table>
+          <thead><tr><th>Method</th><th>CodeQA</th><th>Browse+</th><th>OOLONG</th><th>O-Pairs</th></tr></thead>
+          <tbody>
+            <tr><td>Base GPT-5</td><td>24*</td><td>0*</td><td>44</td><td class="dim">&lt;0.1</td></tr>
+            <tr><td>CodeAct+BM25</td><td>22*</td><td>51</td><td>38</td><td>24.7</td></tr>
+            <tr><td>Summary agent</td><td>58</td><td>70.5</td><td>46</td><td class="dim">&lt;0.1</td></tr>
+            <tr><td><strong>RLM</strong></td><td class="best">62</td><td class="best">91.3</td><td class="best">56.5</td><td class="best">58.0</td></tr>
+          </tbody>
+        </table>
+        <p class="note">* hit context limits on some runs.</p>
+
+        <h3>Qwen3-8B (the fine-tuned model you can run)</h3>
+        <table>
+          <thead><tr><th>Setting</th><th>CodeQA</th><th>Browse+</th><th>OOLONG</th><th>O-Pairs</th></tr></thead>
+          <tbody>
+            <tr><td>Base</td><td>4*</td><td>0*</td><td>0*</td><td class="dim">0.1</td></tr>
+            <tr><td>RLM scaffold</td><td>26</td><td>2</td><td>24</td><td>4.3</td></tr>
+            <tr><td><strong>RLM-Qwen3-8B</strong></td><td class="best">32</td><td class="best">14</td><td class="best">32</td><td class="best">5.2</td></tr>
+          </tbody>
+        </table>
+        <p class="note">+28.3% median gain from 1K distilled trajectories. * hit context limits.</p>
+      </div>
+
+    </div>
   </div>
   <div class="footer">
     <div class="refs"><strong>References</strong><br>[1] A. L. Zhang et al. "Recursive Language Models." arXiv 2512.24601v2, 2025.</div>
