@@ -101,6 +101,19 @@
     .footer .refs strong { color: var(--heading); font-size: 9px; }
     .footer .refs a { color: var(--blue); text-decoration: none; }
 
+    .footer .qr-slot {
+      flex: 0 0 auto; width: 60px; height: 60px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 7px; font-weight: 700; color: var(--muted); text-transform: uppercase;
+    }
+    .conf-bar {
+      background: var(--heading); color: #8899aa; font-size: 8.5px;
+      padding: 4px 16px; display: flex; justify-content: space-between; flex-shrink: 0;
+    }
+    .conf-bar a { color: #8ecae6; text-decoration: none; }
+
+
     .cmp-table th:first-child { text-align: left; min-width: 68px; }
     .cmp-table td { font-size: 8px; font-weight: 400; text-align: center; }
     .cmp-table td:first-child { font-size: 8.5px; font-weight: 700; text-align: left; }
@@ -362,7 +375,20 @@
     </div>
   </div>
   <div class="footer">
-    <div class="refs"><strong>References</strong><br>[1] A. L. Zhang et al. "Recursive Language Models." arXiv 2512.24601v2, 2025.</div>
+    <div class="refs">
+      <strong>References</strong><br>
+      [1] A. L. Zhang, T. Kraska, O. Khattab. &ldquo;Recursive Language Models.&rdquo; arXiv 2512.24601v2, 2025. <a href="https://arxiv.org/html/2512.24601v2">arxiv.org/html/2512.24601v2</a><br>
+      [2] Code: <a href="https://github.com/alexzhang13/rlm">github.com/alexzhang13/rlm</a><br>
+      [3] RLM-Qwen3-8B: <a href="https://huggingface.co/mit-oasys/rlm-qwen3-8b-v0.1">huggingface.co/mit-oasys/rlm-qwen3-8b-v0.1</a> &nbsp;|&nbsp; Qwen3-8B: <a href="https://huggingface.co/Qwen/Qwen3-8B">huggingface.co/Qwen/Qwen3-8B</a>
+    </div>
+    <div class="qr-slot" style="border:none; background:transparent;">
+      <img src="qr-code.png" alt="QR Code" style="width:60px; height:60px; object-fit:contain;">
+    </div>
+  </div>
+
+  <div class="conf-bar">
+    <span>PyTorch Conference EU 2026</span>
+    <span></span>
   </div>
 </div>
 </body>
