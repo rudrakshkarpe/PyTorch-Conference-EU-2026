@@ -37,6 +37,7 @@
 
     .poster {
       width: min(100vw - 16px, 1580px);
+      aspect-ratio: 84.1 / 59.4;
       margin: 8px auto;
       background: var(--bg);
       box-shadow: 0 4px 20px rgba(0,0,0,.12);
@@ -45,6 +46,21 @@
       flex-direction: column;
     }
 
+    @page { size: 84.1cm 59.4cm landscape; margin: 0; }
+
+    @media print {
+      body { background: #fff; margin: 0; padding: 0; }
+      .poster {
+        width: 84.1cm;
+        height: 59.4cm;
+        margin: 0;
+        box-shadow: none;
+        aspect-ratio: auto;
+      }
+      .poster * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
+    /* ── Header ── */
     .header {
       background: #1a2744;
       padding: 12px 24px;
@@ -57,11 +73,76 @@
       flex-shrink: 0;
     }
 
-    .header .center { flex: 1; text-align: center; z-index: 1; min-width: 0; }
-    .header h1 { font-size: clamp(15px, 1.55vw, 21px); font-weight: 800; line-height: 1.22; letter-spacing: -.01em; }
-    .header .authors { font-size: 10.5px; margin-top: 4px; opacity: .95; font-weight: 600; }
-    .header .affiliations { font-size: 9px; margin-top: 2px; opacity: .78; }
+    .header::before { display: none; }
 
+    .header .logo-area {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 1;
+    }
+
+    .pytorch-flame { width: 44px; height: 44px; }
+
+    .conf-label {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: .01em;
+    }
+
+    .conf-label small { display: block; font-size: 9px; font-weight: 500; opacity: .8; }
+
+    .header .center {
+      flex: 1;
+      text-align: center;
+      z-index: 1;
+      min-width: 0;
+    }
+
+    .header h1 {
+      font-size: clamp(15px, 1.55vw, 21px);
+      font-weight: 800;
+      line-height: 1.22;
+      letter-spacing: -.01em;
+    }
+
+    .header .authors {
+      font-size: 10.5px;
+      margin-top: 4px;
+      opacity: .95;
+      font-weight: 600;
+    }
+
+    .header .affiliations {
+      font-size: 9px;
+      margin-top: 2px;
+      opacity: .78;
+    }
+
+    .header .right-logo {
+      flex: 0 0 auto;
+      text-align: center;
+      z-index: 1;
+    }
+
+    .header .right-logo .org-box {
+      width: 80px;
+      height: 50px;
+      background: rgba(255,255,255,.15);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      backdrop-filter: blur(4px);
+    }
+
+    /* ── Columns ── */
     .body {
       display: grid;
       grid-template-columns: 1fr 1.1fr 1fr;
@@ -71,48 +152,172 @@
       min-height: 0;
     }
 
-    .col { padding: 12px 16px 14px; border-right: 1.5px solid var(--border); overflow: hidden; }
+    .col {
+      padding: 12px 16px 14px;
+      border-right: 1.5px solid var(--border);
+      overflow: hidden;
+    }
+
     .col:last-child { border-right: none; }
 
+    /* ── Section blocks ── */
     .section { margin-bottom: 8px; }
     .section:last-child { margin-bottom: 0; }
 
     .section-title {
-      font-size: 12px; font-weight: 800; text-transform: uppercase;
-      color: var(--accent); letter-spacing: .04em;
-      padding-bottom: 3px; border-bottom: 2px solid var(--accent); margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--accent);
+      letter-spacing: .04em;
+      padding-bottom: 3px;
+      border-bottom: 2px solid var(--accent);
+      margin-bottom: 6px;
     }
+
     .section-title.blue { color: var(--blue); border-bottom-color: var(--blue); }
 
-    h3 { font-size: 11px; font-weight: 700; color: var(--heading); margin: 6px 0 3px; }
+    h3 {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--heading);
+      margin: 6px 0 3px;
+    }
+
     h3:first-child { margin-top: 0; }
-    p, li { font-size: 10px; line-height: 1.45; color: var(--body); }
-    ul, ol { padding-left: 14px; margin: 3px 0 6px; }
+
+    p, li {
+      font-size: 10px;
+      line-height: 1.45;
+      color: var(--body);
+    }
+
+    ul, ol {
+      padding-left: 14px;
+      margin: 3px 0 6px;
+    }
+
     li { margin-bottom: 2px; }
+
     strong { color: var(--ink); }
 
-    .footer {
-      border-top: 1.5px solid var(--border);
-      padding: 6px 16px;
-      display: flex; justify-content: space-between; align-items: center; gap: 12px;
-      flex-shrink: 0;
+    /* ── Diagram / figure areas ── */
+    .figure {
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      margin: 6px 0;
+      overflow: hidden;
     }
-    .footer .refs { font-size: 8.5px; line-height: 1.4; color: var(--muted); flex: 1; }
-    .footer .refs strong { color: var(--heading); font-size: 9px; }
-    .footer .refs a { color: var(--blue); text-decoration: none; }
 
-    .footer .qr-slot {
-      flex: 0 0 auto; width: 60px; height: 60px;
-      background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 7px; font-weight: 700; color: var(--muted); text-transform: uppercase;
+    .fig-caption {
+      background: var(--surface);
+      padding: 4px 10px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
     }
-    .conf-bar {
-      background: var(--heading); color: #8899aa; font-size: 8.5px;
-      padding: 4px 16px; display: flex; justify-content: space-between; flex-shrink: 0;
-    }
-    .conf-bar a { color: #8ecae6; text-decoration: none; }
 
+    .fig-body { padding: 8px; }
+
+    .placeholder {
+      background: var(--surface);
+      border: 2px dashed var(--border);
+      border-radius: 4px;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      color: var(--muted);
+      font-weight: 600;
+      text-align: center;
+      padding: 8px;
+      line-height: 1.4;
+    }
+
+    /* ── Stack layers ── */
+    .stack { display: flex; flex-direction: column; gap: 0; }
+
+    .stack-row {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      font-size: 9.5px;
+      line-height: 1.35;
+    }
+
+    .stack-row:last-child { border-bottom: 1px solid var(--border); }
+
+    .stack-tag {
+      flex: 0 0 78px;
+      min-width: 78px;
+      max-width: 78px;
+      padding: 4px 5px;
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .stack-desc { flex: 1; padding: 4px 6px; }
+
+    .tag-repl { background: #d4edda; color: #155724; }
+    .tag-orch { background: #fff3cd; color: #856404; }
+    .tag-torch { background: #cce5ff; color: #004085; }
+    .tag-train { background: #fde8d0; color: #b45309; }
+
+    /* ── Algorithm box ── */
+    .algo-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 9.5px;
+      line-height: 1.4;
+      margin: 6px 0;
+    }
+
+    .algo-box .algo-title {
+      font-weight: 700;
+      font-size: 9.5px;
+      color: var(--heading);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .algo-box code { background: transparent; padding: 0; }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      font-size: 9px;
+      border-collapse: collapse;
+      margin: 6px 0;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 3px 5px;
+      text-align: center;
+    }
+
+    th {
+      background: var(--surface);
+      font-weight: 700;
+      font-size: 8.5px;
+      color: var(--heading);
+    }
+
+    td:first-child { text-align: left; font-weight: 600; }
+    .best { font-weight: 700; color: var(--green); }
+    .dim { color: var(--muted); }
 
     .cmp-table th:first-child { text-align: left; min-width: 68px; }
     .cmp-table td { font-size: 8px; font-weight: 400; text-align: center; }
@@ -123,48 +328,90 @@
     .cmp-table tr:last-child { background: #eef6ee; }
     .cmp-table tr:last-child td { font-weight: 600; }
 
-    .figure { border: 1.5px solid var(--border); border-radius: 4px; margin: 6px 0; overflow: hidden; }
-    .fig-caption { background: var(--surface); padding: 4px 10px; font-size: 9px; font-weight: 700; color: var(--muted); border-bottom: 1px solid var(--border); }
-    .fig-body { padding: 8px; }
-    .note { font-size: 9px; color: var(--muted); line-height: 1.4; margin-top: 4px; }
-    svg.arch { width: 100%; height: auto; display: block; }
-
-    .stack { display: flex; flex-direction: column; gap: 0; }
-    .stack-row { display: flex; align-items: stretch; border: 1px solid var(--border); border-bottom: none; font-size: 9.5px; line-height: 1.35; }
-    .stack-row:last-child { border-bottom: 1px solid var(--border); }
-    .stack-tag { flex: 0 0 78px; min-width: 78px; max-width: 78px; padding: 4px 5px; font-size: 7px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; display: flex; align-items: center; justify-content: center; text-align: center; }
-    .stack-desc { flex: 1; padding: 4px 6px; }
-    .tag-repl { background: #d4edda; color: #155724; }
-    .tag-orch { background: #fff3cd; color: #856404; }
-    .tag-torch { background: #cce5ff; color: #004085; }
-    .tag-train { background: #fde8d0; color: #b45309; }
-
-    th, td { border: 1px solid var(--border); padding: 3px 5px; text-align: center; }
-    th { background: var(--surface); font-weight: 700; font-size: 8.5px; color: var(--heading); }
-    td:first-child { text-align: left; font-weight: 600; }
-    .best { font-weight: 700; color: var(--green); }
-    .dim { color: var(--muted); }
-    table { width: 100%; font-size: 9px; border-collapse: collapse; margin: 6px 0; }
-    hr.sec-sep { border: none; border-top: 1px solid var(--border); margin: 5px 0; }
-
-    .placeholder {
-      background: var(--surface); border: 2px dashed var(--border); border-radius: 4px;
-      min-height: 50px; display: flex; align-items: center; justify-content: center;
-      font-size: 9px; color: var(--muted); font-weight: 600; text-align: center; padding: 8px; line-height: 1.4;
+    /* ── Callout ── */
+    .callout {
+      background: #f0f4fa;
+      border-left: 3px solid var(--accent);
+      padding: 5px 8px;
+      font-size: 9.5px;
+      line-height: 1.4;
+      margin: 6px 0;
+      border-radius: 0 3px 3px 0;
     }
 
+    .note {
+      font-size: 9px;
+      color: var(--muted);
+      line-height: 1.4;
+      margin-top: 4px;
+    }
 
+    /* ── Footer ── */
+    .footer {
+      border-top: 1.5px solid var(--border);
+      padding: 6px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
 
+    .footer .refs {
+      font-size: 8.5px;
+      line-height: 1.4;
+      color: var(--muted);
+      flex: 1;
+    }
 
+    .footer .refs strong { color: var(--heading); font-size: 9px; }
+    .footer .refs a { color: var(--blue); text-decoration: none; }
 
+    .footer .qr-slot {
+      flex: 0 0 auto;
+      width: 60px;
+      height: 60px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 7px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .conf-bar {
+      background: var(--heading);
+      color: #8899aa;
+      font-size: 8.5px;
+      padding: 4px 16px;
+      display: flex;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .conf-bar a { color: #8ecae6; text-decoration: none; }
+
+    hr.sec-sep {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 5px 0;
+    }
+
+    svg.arch { width: 100%; height: auto; display: block; }
   </style>
 </head>
 <body>
-<div class="poster">
+<div class="poster" contenteditable="false">
+
+  <!-- ═══ HEADER ═══ -->
   <div class="header">
-    <div class="logo-area" style="flex:0 0 auto;display:flex;align-items:center;gap:10px;z-index:1;">
+    <div class="logo-area">
       <img src="pytorch-logo.png" alt="PyTorch" style="width:52px; height:52px; object-fit:contain;">
-      <div style="font-size:13px;font-weight:700;line-height:1.25;letter-spacing:.01em;">
+      <div class="conf-label">
         PyTorch Conference EU 2026
       </div>
     </div>
@@ -175,12 +422,17 @@
       <div class="affiliations"><sup>1</sup>Simplismart &nbsp;&nbsp; <sup>2</sup>Qualcomm</div>
     </div>
 
-    <div class="logo-area" style="flex:0 0 auto;display:flex;align-items:center;gap:10px;z-index:1;visibility:hidden;">
+    <!-- invisible spacer to balance the left logo area -->
+    <div class="logo-area" style="visibility:hidden;">
       <img src="pytorch-logo.png" alt="" style="width:52px; height:52px;">
-      <div style="font-size:13px;font-weight:700;line-height:1.25;">PyTorch Conference EU 2026</div>
+      <div class="conf-label">PyTorch Conference EU 2026</div>
     </div>
   </div>
+
+  <!-- ═══ 3-COLUMN BODY ═══ -->
   <div class="body">
+
+    <!-- ────── COLUMN 1 ────── -->
     <div class="col">
 
       <div class="section">
@@ -195,6 +447,7 @@
 
       <div class="section">
         <div class="section-title">Motivation</div>
+
         <ul>
           <li><strong>Context rot is real.</strong> As conversation length grows, models get measurably worse - even within their context window. On OOLONG, GPT-5 scores drop as context doubles from 132K to 263K tokens.</li>
           <li>Summarization heuristics assume early context is forgettable - wrong for tasks needing &Omega;(|P|) work (e.g. counting, labeling thousands of entries).</li>
@@ -214,7 +467,102 @@
         </ol>
       </div>
 
+      <div class="section">
+        <div class="section-title">RLM vs. Existing Methods</div>
+        <table class="cmp-table">
+          <thead>
+            <tr>
+              <th>Dimension</th>
+              <th>Base LLM</th>
+              <th>RAG (BM25)</th>
+              <th>Summary Agent</th>
+              <th>Sub-Agent</th>
+              <th>RLM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Prompt handling</td>
+              <td>In-context</td>
+              <td>Retrieved chunks</td>
+              <td>Iterative compress</td>
+              <td>Verbal split</td>
+              <td class="yes">External REPL</td>
+            </tr>
+            <tr>
+              <td>Max input</td>
+              <td class="no">~128K</td>
+              <td class="partial">Index any</td>
+              <td class="no">~128K</td>
+              <td class="no">~128K</td>
+              <td class="yes">10M+</td>
+            </tr>
+            <tr>
+              <td>Dense access</td>
+              <td class="no">No</td>
+              <td class="no">Sparse</td>
+              <td class="no">Lossy</td>
+              <td class="partial">Partial</td>
+              <td class="yes">Yes</td>
+            </tr>
+            <tr>
+              <td>Sub-tasks</td>
+              <td class="no">None</td>
+              <td class="no">None</td>
+              <td class="no">None</td>
+              <td class="partial">Verbal</td>
+              <td class="yes">Code loops</td>
+            </tr>
+            <tr>
+              <td>&Omega;(|P|) calls</td>
+              <td class="no">No</td>
+              <td class="no">No</td>
+              <td class="no">No</td>
+              <td class="no">No</td>
+              <td class="yes">Yes</td>
+            </tr>
+            <tr>
+              <td>Output limit</td>
+              <td class="no">K tokens</td>
+              <td class="no">K tokens</td>
+              <td class="no">K tokens</td>
+              <td class="no">K tokens</td>
+              <td class="yes">Unbounded</td>
+            </tr>
+            <tr>
+              <td>Retraining</td>
+              <td class="yes">No</td>
+              <td class="yes">No</td>
+              <td class="yes">No</td>
+              <td class="yes">No</td>
+              <td class="yes">No (opt. SFT)</td>
+            </tr>
+            <tr>
+              <td>Cost profile</td>
+              <td>Fixed</td>
+              <td>Fixed + idx</td>
+              <td>Linear</td>
+              <td>Linear</td>
+              <td class="partial">Variable</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="note">K = model context window. RAG retrieves relevant chunks but cannot densely process every token. Summary agents lose detail on compaction. Only RLMs support true programmatic recursion over the full input.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title blue">Related Work</div>
+        <ul>
+          <li><strong>Context compaction</strong> (Codex CLI, summary agents): iteratively summarizes context when full. Loses dense detail; presumes forgettable content.</li>
+          <li><strong>Retrieval agents</strong> (CodeAct + BM25): index input with a retriever. Cannot densely process every line - limited by underlying model window.</li>
+          <li><strong>Sub-agent delegation</strong> (Claude sub-agents, Context Folding): verbal delegation, not programmatic. Cannot loop &Omega;(|P|) times.</li>
+          <li><strong>RLMs</strong> combine the REPL approach with symbolic recursion, enabling dense access to arbitrarily long inputs via code.</li>
+        </ul>
+      </div>
+
     </div>
+
+    <!-- ────── COLUMN 2 ────── -->
     <div class="col">
 
       <div class="section">
@@ -233,11 +581,13 @@
                 <marker id="fn" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><polygon points="0 0,7 3,0 6" fill="#c0392b"/></marker>
               </defs>
 
+              <!-- ① User Prompt P (entry point) -->
               <rect x="14" y="2" width="155" height="22" rx="3" fill="#fff0f0" stroke="#c0392b" stroke-dasharray="4 2"/>
               <text x="91" y="11" text-anchor="middle" font-size="7" font-weight="700" fill="#c0392b">&#x2460; User Prompt P</text>
               <text x="91" y="20" text-anchor="middle" font-size="5.5" fill="#6c7a89">potentially millions of tokens</text>
               <path d="M 91 26 V 37" stroke="#4a5d6e" stroke-width="1" fill="none" marker-end="url(#fl)"/>
 
+              <!-- PYTHON REPL (left, large box) -->
               <rect x="14" y="39" width="175" height="98" rx="5" fill="#d4edda" stroke="#1a7a3a" stroke-width="1.3"/>
               <text x="101" y="52" text-anchor="middle" font-size="8" font-weight="700" fill="#155724">PYTHON REPL ENVIRONMENT</text>
               <line x1="24" y1="56" x2="179" y2="56" stroke="#1a7a3a" stroke-width=".4" opacity=".35"/>
@@ -248,6 +598,7 @@
               <text x="24" y="111" font-size="6.5" fill="#1a1a2e">&#8226; Sets Final when answer is ready</text>
               <text x="24" y="131" font-size="5.5" font-weight="600" fill="#155724" font-style="italic">Root LM never sees raw prompt tokens</text>
 
+              <!-- PYTORCH LLM (right, large box) -->
               <rect x="251" y="39" width="175" height="98" rx="5" fill="#cce5ff" stroke="#004085" stroke-width="1.3"/>
               <text x="338" y="52" text-anchor="middle" font-size="8" font-weight="700" fill="#004085">PYTORCH &#183; LANGUAGE MODEL</text>
               <line x1="261" y1="56" x2="416" y2="56" stroke="#004085" stroke-width=".4" opacity=".35"/>
@@ -258,30 +609,38 @@
               <text x="261" y="111" font-size="6.5" fill="#1a1a2e">&#8226; Never sees full prompt P</text>
               <text x="261" y="131" font-size="5.5" font-weight="600" fill="#004085" font-style="italic">Each call = one autoregressive pass</text>
 
+              <!-- ② Metadata arrow: REPL → LLM (upper) -->
               <path d="M 191 72 H 249" stroke="#4a5d6e" stroke-width="1.3" fill="none" marker-end="url(#fl)"/>
               <text x="220" y="66" text-anchor="middle" font-size="6" font-weight="700" fill="#0f1b35">&#x2461; metadata</text>
               <text x="220" y="80" text-anchor="middle" font-size="5.5" fill="#6c7a89">constant-size hist</text>
 
+              <!-- ③ Code arrow: LLM → REPL (lower) -->
               <path d="M 249 108 H 191" stroke="#4a5d6e" stroke-width="1.3" fill="none" marker-end="url(#fl)"/>
               <text x="220" y="102" text-anchor="middle" font-size="6" font-weight="700" fill="#0f1b35">&#x2462; Python code</text>
               <text x="220" y="116" text-anchor="middle" font-size="5.5" fill="#6c7a89">to execute in REPL</text>
 
+              <!-- LOOP badge (center) -->
               <rect x="206" y="84" width="28" height="13" rx="6" fill="#1b3a5c"/>
               <text x="220" y="93" text-anchor="middle" font-size="6" font-weight="700" fill="#fff">LOOP</text>
 
+              <!-- Arrow from REPL bottom → decision -->
               <path d="M 101 139 V 150" stroke="#4a5d6e" stroke-width="1" fill="none" marker-end="url(#fl)"/>
 
+              <!-- ④ Decision pill -->
               <rect x="34" y="152" width="134" height="18" rx="9" fill="#fff" stroke="#1b3a5c" stroke-width="1.2"/>
               <text x="101" y="164" text-anchor="middle" font-size="7" font-weight="700" fill="#1b3a5c">&#x2463; Final set in REPL?</text>
 
+              <!-- Yes → OUTPUT -->
               <path d="M 170 161 H 188" stroke="#1a7a3a" stroke-width="1.2" fill="none" marker-end="url(#fy)"/>
               <text x="179" y="155" font-size="5.5" font-weight="700" fill="#1a7a3a">Yes</text>
               <rect x="190" y="152" width="72" height="18" rx="3" fill="#d4edda" stroke="#1a7a3a"/>
               <text x="226" y="164" text-anchor="middle" font-size="7" font-weight="700" fill="#155724">&#x2464; OUTPUT</text>
 
+              <!-- No → loop back (left edge, up to REPL) -->
               <path d="M 34 161 L 8 161 L 8 48 L 12 48" stroke="#c0392b" stroke-width="1.2" fill="none" marker-end="url(#fn)" stroke-dasharray="4 2"/>
               <text x="4" y="108" text-anchor="middle" font-size="6" font-weight="700" fill="#c0392b" transform="rotate(-90,4,108)">No &#8594; repeat &#x2461;</text>
 
+              <!-- Sub-call annotation (bottom-right) -->
               <rect x="280" y="148" width="148" height="38" rx="3" fill="#fde8d0" stroke="#b45309" stroke-dasharray="3 2"/>
               <text x="354" y="160" text-anchor="middle" font-size="6.5" font-weight="700" fill="#b45309">sub_RLM() recursive calls</text>
               <text x="354" y="170" text-anchor="middle" font-size="6" fill="#6c7a89">REPL code can spawn sub-calls</text>
@@ -291,7 +650,6 @@
           </div>
         </div>
       </div>
-
 
       <div class="section">
         <h3>Where PyTorch Fits in the Stack</h3>
@@ -340,6 +698,8 @@
       </div>
 
     </div>
+
+    <!-- ────── COLUMN 3 ────── -->
     <div class="col">
 
       <div class="section">
@@ -372,8 +732,41 @@
         <p class="note">+28.3% median gain from 1K distilled trajectories. * hit context limits.</p>
       </div>
 
+      <hr class="sec-sep">
+
+      <div class="section">
+        <div class="section-title blue">Key Findings</div>
+        <ul>
+          <li><strong>RLMs are not agents.</strong> Agents decompose by <em>task</em> (human-designed workflows). RLMs decompose by <em>context</em> - the LM decides how to break down its input. This is a fundamentally different bet.</li>
+          <li><strong>No context rot at scale:</strong> RLM performance does not degrade at 10M+ tokens because the root LM never sees the full context - only constant-size metadata.</li>
+          <li><strong>Small model beats large:</strong> RLM(GPT-5-mini) outperforms raw GPT-5 by +114% on OOLONG 132K. The scaffold matters more than model size.</li>
+          <li><strong>RAG fails on dense tasks:</strong> CodeAct+BM25 scores 38 on OOLONG vs RLM's 56.5. Retrieval cannot substitute for dense line-by-line processing.</li>
+          <li><strong>New axis of test-time scaling:</strong> alongside CoT reasoning and ReAct agents, RLMs offer a third learnable axis - how the model interacts with and recurses over context is RL-ifiable.</li>
+          <li><strong>RLMs improve as LMs improve.</strong> If tomorrow's frontier model handles 10M tokens, an RLM around it handles 100M tokens - at lower cost.</li>
+        </ul>
+      </div>
+
+      <hr class="sec-sep">
+
+      <div class="section">
+        <div class="section-title blue">H100 Benchmarking POC</div>
+        <p>
+          Live demo on a single H100 using <a href="https://github.com/alexzhang13/rlm" style="color:var(--blue);">alexzhang13/rlm</a>. Same seeds &amp; params; only weights differ:
+        </p>
+        <ul>
+          <li><strong>A:</strong> Qwen3-8B (base) &nbsp; <strong>B:</strong> RLM-Qwen3-8B (fine-tuned)</li>
+        </ul>
+        <p style="margin-top:4px;">Metrics: task score, wall-clock, peak VRAM, tokens generated, REPL iterations, sub-calls.</p>
+
+        <div class="placeholder" style="min-height:60px;">
+          [Your H100 POC results here]
+        </div>
+      </div>
+
     </div>
   </div>
+
+  <!-- ═══ FOOTER ═══ -->
   <div class="footer">
     <div class="refs">
       <strong>References</strong><br>
