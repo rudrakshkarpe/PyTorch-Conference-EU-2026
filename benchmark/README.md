@@ -42,11 +42,3 @@ python plot_results.py
 ```
 
 Results land in `results/` as JSON files and PNG charts.
-
-## Cloud Rental
-
-Cheapest options for a single H100 80GB SXM:
-- **Lambda Cloud**: ~$2.49/hr
-- **RunPod**: ~$2.39/hr (community cloud)
-
-Estimated total runtime: 3-5 hours (~$8-12).
