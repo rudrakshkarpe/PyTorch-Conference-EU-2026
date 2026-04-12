@@ -1,10 +1,10 @@
-# 🔥 RLM Inference Benchmark — PyTorch Conference EU 2026 (Paris)
+# RLM Inference Benchmark — PyTorch Conference EU 2026 (Paris)
 
 > **Presentation & poster repository** for the talk *"Accelerating RLM Inference with vLLM Optimizations"* at [PyTorch Conference EU 2026](https://pytorch.org/), Paris.
 
 ---
 
-## 📌 Overview
+## Overview
 
 This repository contains the **full benchmark suite** used to produce results and charts for the conference poster. It measures the real-world inference performance of two models:
 
@@ -17,7 +17,7 @@ Both models are evaluated across **three vLLM serving configurations** on a sing
 
 ---
 
-## 🗂️ Repository Structure
+## Repository Structure
 
 ```
 PyTorch-Conference-EU-2026/
@@ -41,7 +41,7 @@ PyTorch-Conference-EU-2026/
 
 ---
 
-## ⚙️ Optimization Configurations
+## Optimization Configurations
 
 Three vLLM serving configurations are benchmarked to measure the cumulative effect of each optimization:
 
@@ -53,7 +53,7 @@ Three vLLM serving configurations are benchmarked to measure the cumulative effe
 
 ---
 
-## 📊 Metrics Collected
+## Metrics Collected
 
 For every sample, the following metrics are recorded:
 
@@ -68,7 +68,7 @@ For every sample, the following metrics are recorded:
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - NVIDIA H100 (or equivalent) GPU with CUDA drivers
@@ -108,7 +108,7 @@ python plot_results.py
 
 ---
 
-## 📈 Generated Charts
+## Generated Charts
 
 | Chart | File | Description |
 |---|---|---|
@@ -120,7 +120,7 @@ python plot_results.py
 
 ---
 
-## 🛠️ CLI Reference
+## CLI Reference
 
 ### `run_benchmark.py`
 ```
@@ -145,7 +145,7 @@ python plot_results.py
 
 ---
 
-## 📦 Dependencies
+## Dependencies
 
 ```
 rlms>=0.1.1
@@ -158,14 +158,15 @@ numpy>=1.26.0
 
 ---
 
-## 📄 Poster
+## Poster
 
 - 📄 **[PDF Poster](./poster/PyTorch%20Conference_2026_Paris.pdf)**
 - 🌐 **[Interactive HTML Poster](./poster/pytorch-rlm-poster.html)**
 
 ---
 
-## 👤 Author
+## Authors
 
 **Rudraksh Karpe** — [@rudrakshkarpe](https://github.com/rudrakshkarpe)  
+**Shivay Lamba** — [@shivaylamba](https://github.com/shivaylamba)  
 Presented at **PyTorch Conference EU 2026**, Paris 🇫🇷
