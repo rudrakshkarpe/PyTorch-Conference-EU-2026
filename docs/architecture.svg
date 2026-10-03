@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1760" height="1040" viewBox="0 0 1760 1040">
+<defs><marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><polygon points="0 0, 10 4, 0 8" fill="#1A1A1A"/></marker><marker id="arr-p" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><polygon points="0 0, 10 4, 0 8" fill="#8A2A7A"/></marker><marker id="arr-g" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><polygon points="0 0, 10 4, 0 8" fill="#3A7A28"/></marker><marker id="arr-b" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><polygon points="0 0, 10 4, 0 8" fill="#045878"/></marker><marker id="arr-o" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><polygon points="0 0, 10 4, 0 8" fill="#C06028"/></marker><marker id="arr-u" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><polygon points="0 0, 10 4, 0 8" fill="#3A4088"/></marker></defs>
+<rect width="1760" height="1040" fill="#F2F2F2"/>
+<rect x="40.0" y="40.0" width="260.0" height="108.0" rx="16" ry="16" fill="#FFFFFF" stroke="#6E6E6E" stroke-width="2.2" stroke-dasharray="7 5"/>
+<circle cx="68" cy="68" r="12" fill="#FFFFFF" stroke="#6E6E6E" stroke-width="1.6"/><text x="68" y="72.2" text-anchor="middle" fill="#6E6E6E" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">D</text>
+<text x="178.0" y="78.0" text-anchor="middle" fill="#1A1A1A" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="19" font-weight="800">OOLONG-synth</text>
+<text x="178.0" y="104.0" text-anchor="middle" fill="#555555" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13.5" font-weight="600">Long-context tasks</text>
+<text x="178.0" y="126.0" text-anchor="middle" fill="#555555" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13.5" font-weight="600">Hugging Face dataset</text>
+<rect x="340.0" y="28.0" width="1080.0" height="132.0" rx="20" ry="20" fill="#E098D8" stroke="#8A2A7A" stroke-width="2.6"/>
+<circle cx="372" cy="58" r="12" fill="#FFFFFF" stroke="#8A2A7A" stroke-width="1.6"/><text x="372" y="62.2" text-anchor="middle" fill="#8A2A7A" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">+</text>
+<text x="880.0" y="64.0" text-anchor="middle" fill="#6A1858" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="24" font-weight="800">This repository</text>
+<text x="880.0" y="92.0" text-anchor="middle" fill="#6A1858" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="14.5" font-weight="600">Conference layer  ·  PyTorch Conference EU 2026</text>
+<rect x="390.0" y="108.0" width="300.0" height="36.0" rx="18.0" ry="18.0" fill="#FFFFFF" stroke="#8A2A7A" stroke-width="1.4"/><text x="540.0" y="132.5" text-anchor="middle" fill="#6A1858" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="800">run_benchmark.py</text>
+<rect x="720.0" y="108.0" width="300.0" height="36.0" rx="18.0" ry="18.0" fill="#FFFFFF" stroke="#8A2A7A" stroke-width="1.4"/><text x="870.0" y="132.5" text-anchor="middle" fill="#6A1858" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="800">plot_results.py  ·  poster</text>
+<rect x="1050.0" y="108.0" width="330.0" height="36.0" rx="18.0" ry="18.0" fill="#FFFFFF" stroke="#8A2A7A" stroke-width="1.4"/><text x="1215.0" y="132.5" text-anchor="middle" fill="#6A1858" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="800">serve_model.sh  ·  setup</text>
+<rect x="1460.0" y="40.0" width="260.0" height="108.0" rx="16" ry="16" fill="#F0C0A8" stroke="#C06028" stroke-width="2.2"/>
+<circle cx="1488" cy="68" r="12" fill="#FFFFFF" stroke="#C06028" stroke-width="1.6"/><text x="1488" y="72.2" text-anchor="middle" fill="#C06028" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">M</text>
+<text x="1600.0" y="78.0" text-anchor="middle" fill="#6A2E10" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="19" font-weight="800">Metrics</text>
+<text x="1600.0" y="104.0" text-anchor="middle" fill="#6A2E10" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13.5" font-weight="600">Wall-clock  ·  VRAM</text>
+<text x="1600.0" y="126.0" text-anchor="middle" fill="#6A2E10" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13.5" font-weight="600">Tokens  ·  iters  ·  sub-calls</text>
+<path d="M 170 148 V 188 H 360" fill="none" stroke="#3A7A28" stroke-width="2.2" marker-end="url(#arr-g)"/>
+<line x1="880.0" y1="160.0" x2="880.0" y2="188.0" stroke="#8A2A7A" stroke-width="2.4" marker-end="url(#arr-p)"/>
+<path d="M 1590 148 V 188 H 1400" fill="none" stroke="#C06028" stroke-width="2.2" stroke-dasharray="6 4" marker-end="url(#arr-o)"/>
+<text x="210.0" y="176.0" text-anchor="start" fill="#3A7A28" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="700">samples</text>
+<text x="1540.0" y="176.0" text-anchor="end" fill="#C06028" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="700">observe</text>
+<rect x="40.0" y="196.0" width="1680.0" height="500.0" rx="22" ry="22" fill="#FBFBFB" stroke="#C8C8C8" stroke-width="2.0"/>
+<text x="64.0" y="226.0" text-anchor="start" fill="#555555" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="14" font-weight="800">RLM Runtime</text>
+<text x="186.0" y="226.0" text-anchor="start" fill="#808080" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="600">upstream  ·  alexzhang13/rlm  (rlms)</text>
+<rect x="400.0" y="248.0" width="960.0" height="88.0" rx="18" ry="18" fill="#E098D8" stroke="#8A2A7A" stroke-width="2.4"/>
+<circle cx="432" cy="276" r="12" fill="#FFFFFF" stroke="#8A2A7A" stroke-width="1.6"/><text x="432" y="280.2" text-anchor="middle" fill="#8A2A7A" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">R</text>
+<text x="880.0" y="280.0" text-anchor="middle" fill="#6A1858" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="22" font-weight="800">RLM Orchestrator</text>
+<text x="880.0" y="308.0" text-anchor="middle" fill="#6A1858" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="14" font-weight="600">hist  →  generate  →  exec  →  trim  →  repeat until Final</text>
+<line x1="880.0" y1="336.0" x2="880.0" y2="364.0" stroke="#8A2A7A" stroke-width="2.2" marker-end="url(#arr-p)"/>
+<rect x="72.0" y="376.0" width="720.0" height="132.0" rx="18" ry="18" fill="#B0E0A0" stroke="#3A7A28" stroke-width="2.4"/>
+<circle cx="104" cy="404" r="12" fill="#FFFFFF" stroke="#3A7A28" stroke-width="1.6"/><text x="104" y="408.2" text-anchor="middle" fill="#3A7A28" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">P</text>
+<text x="432.0" y="412.0" text-anchor="middle" fill="#1E4A14" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="22" font-weight="800">Python REPL</text>
+<text x="432.0" y="442.0" text-anchor="middle" fill="#1E4A14" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="14" font-weight="600">Prompt P as a variable   ·   sub_RLM() hook</text>
+<text x="432.0" y="466.0" text-anchor="middle" fill="#1E4A14" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="14" font-weight="600">Peek  ·  grep  ·  chunk  ·  recurse  ·  set Final</text>
+<rect x="968.0" y="376.0" width="720.0" height="132.0" rx="18" ry="18" fill="#B0E0A0" stroke="#3A7A28" stroke-width="2.4"/>
+<circle cx="1000" cy="404" r="12" fill="#FFFFFF" stroke="#3A7A28" stroke-width="1.6"/><text x="1000" y="408.2" text-anchor="middle" fill="#3A7A28" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">L</text>
+<text x="1328.0" y="412.0" text-anchor="middle" fill="#1E4A14" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="22" font-weight="800">Language Model</text>
+<text x="1328.0" y="442.0" text-anchor="middle" fill="#1E4A14" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="14" font-weight="600">Qwen3-8B   or   RLM-Qwen3-8B</text>
+<text x="1328.0" y="466.0" text-anchor="middle" fill="#1E4A14" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="14" font-weight="600">Sees hist only  ·  never the raw prompt P</text>
+<path d="M 792 416 H 956" fill="none" stroke="#045878" stroke-width="2.4" marker-end="url(#arr-b)"/>
+<path d="M 956 468 H 792" fill="none" stroke="#3A7A28" stroke-width="2.4" marker-end="url(#arr-g)"/>
+<text x="874.0" y="404.0" text-anchor="middle" fill="#045878" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">metadata</text>
+<text x="874.0" y="490.0" text-anchor="middle" fill="#3A7A28" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">Python code</text>
+<line x1="432.0" y1="508.0" x2="432.0" y2="536.0" stroke="#3A7A28" stroke-width="2.2" marker-end="url(#arr-g)"/>
+<line x1="1328.0" y1="508.0" x2="1328.0" y2="536.0" stroke="#3A7A28" stroke-width="2.2" marker-end="url(#arr-g)"/>
+<rect x="72.0" y="548.0" width="720.0" height="116.0" rx="18" ry="18" fill="#0898D0" stroke="#045878" stroke-width="2.4"/>
+<circle cx="104" cy="576" r="12" fill="#FFFFFF" stroke="#045878" stroke-width="1.6"/><text x="104" y="580.2" text-anchor="middle" fill="#045878" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">F</text>
+<text x="432.0" y="586.0" text-anchor="middle" fill="#FFFFFF" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="20" font-weight="800">REPL result</text>
+<text x="432.0" y="616.0" text-anchor="middle" fill="#E8F6FC" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="14" font-weight="600">Final set?   Yes → output    No → loop</text>
+<rect x="968.0" y="548.0" width="720.0" height="116.0" rx="18" ry="18" fill="#0898D0" stroke="#045878" stroke-width="2.4"/>
+<circle cx="1000" cy="576" r="12" fill="#FFFFFF" stroke="#045878" stroke-width="1.6"/><text x="1000" y="580.2" text-anchor="middle" fill="#045878" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">V</text>
+<text x="1328.0" y="586.0" text-anchor="middle" fill="#FFFFFF" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="20" font-weight="800">vLLM inference</text>
+<text x="1328.0" y="616.0" text-anchor="middle" fill="#E8F6FC" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="14" font-weight="600">OpenAI HTTP   ·   localhost:8000/v1   ·   bf16</text>
+<path d="M 792 606 H 956" fill="none" stroke="#C06028" stroke-width="2.0" stroke-dasharray="5 4" marker-end="url(#arr-o)"/>
+<text x="874.0" y="594.0" text-anchor="middle" fill="#C06028" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">sub_RLM()</text>
+<path d="M 432 664 V 700 H 1328" fill="none" stroke="#3A4088" stroke-width="2.2"/>
+<line x1="432.0" y1="700.0" x2="432.0" y2="724.0" stroke="#3A4088" stroke-width="2.2" marker-end="url(#arr-u)"/>
+<line x1="880.0" y1="700.0" x2="880.0" y2="724.0" stroke="#3A4088" stroke-width="2.2" marker-end="url(#arr-u)"/>
+<line x1="1328.0" y1="700.0" x2="1328.0" y2="724.0" stroke="#3A4088" stroke-width="2.2" marker-end="url(#arr-u)"/>
+<rect x="72.0" y="736.0" width="528.0" height="100.0" rx="16" ry="16" fill="#8890E0" stroke="#3A4088" stroke-width="2.4"/>
+<text x="336.0" y="774.0" text-anchor="middle" fill="#FFFFFF" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="20" font-weight="800">baseline</text>
+<text x="336.0" y="804.0" text-anchor="middle" fill="#EEF0FF" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13.5" font-weight="600">Prefix cache off   ·   1 sequential sub-call</text>
+<rect x="616.0" y="736.0" width="528.0" height="100.0" rx="16" ry="16" fill="#8890E0" stroke="#3A4088" stroke-width="2.4"/>
+<text x="880.0" y="774.0" text-anchor="middle" fill="#FFFFFF" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="20" font-weight="800">prefix-cache</text>
+<text x="880.0" y="804.0" text-anchor="middle" fill="#EEF0FF" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13.5" font-weight="600">Prefix cache on   ·   1 sequential sub-call</text>
+<rect x="1160.0" y="736.0" width="528.0" height="100.0" rx="16" ry="16" fill="#8890E0" stroke="#3A4088" stroke-width="2.4"/>
+<text x="1424.0" y="774.0" text-anchor="middle" fill="#FFFFFF" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="20" font-weight="800">prefix-cache-batched</text>
+<text x="1424.0" y="804.0" text-anchor="middle" fill="#EEF0FF" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13.5" font-weight="600">Prefix cache on   ·   4 parallel sub-calls</text>
+<line x1="432.0" y1="836.0" x2="432.0" y2="868.0" stroke="#1A1A1A" stroke-width="2.2" marker-end="url(#arr)"/>
+<line x1="880.0" y1="836.0" x2="880.0" y2="868.0" stroke="#1A1A1A" stroke-width="2.2" marker-end="url(#arr)"/>
+<line x1="1328.0" y1="836.0" x2="1328.0" y2="868.0" stroke="#1A1A1A" stroke-width="2.2" marker-end="url(#arr)"/>
+<rect x="40.0" y="880.0" width="1680.0" height="124.0" rx="18" ry="18" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="2.8"/>
+<text x="880.0" y="932.0" text-anchor="middle" fill="#1A1A1A" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="28" font-weight="800">NVIDIA H100  80GB</text>
+<text x="880.0" y="972.0" text-anchor="middle" fill="#555555" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="16" font-weight="600">CUDA   ·   PyTorch   ·   vLLM   ·   bfloat16</text>
+<path d="M 1704 148 V 606 H 1688" fill="none" stroke="#C06028" stroke-width="2.0" stroke-dasharray="6 4" marker-end="url(#arr-o)"/>
+<text x="1696.0" y="390.0" text-anchor="end" fill="#C06028" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="700">metrics</text>
+</svg>

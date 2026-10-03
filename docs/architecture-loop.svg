@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="860" viewBox="0 0 1400 860">
+<defs><marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><polygon points="0 0, 10 4, 0 8" fill="#1A1A1A"/></marker><marker id="arr-p" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><polygon points="0 0, 10 4, 0 8" fill="#8A2A7A"/></marker><marker id="arr-g" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><polygon points="0 0, 10 4, 0 8" fill="#3A7A28"/></marker><marker id="arr-b" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><polygon points="0 0, 10 4, 0 8" fill="#045878"/></marker><marker id="arr-o" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><polygon points="0 0, 10 4, 0 8" fill="#C06028"/></marker><marker id="arr-u" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth"><polygon points="0 0, 10 4, 0 8" fill="#3A4088"/></marker></defs>
+<rect width="1400" height="860" fill="#F2F2F2"/>
+<rect x="500.0" y="28.0" width="400.0" height="72.0" rx="16" ry="16" fill="#FFFFFF" stroke="#C0392B" stroke-width="2.4" stroke-dasharray="7 5"/>
+<text x="700.0" y="58.0" text-anchor="middle" fill="#C0392B" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="20" font-weight="800">User prompt P</text>
+<text x="700.0" y="82.0" text-anchor="middle" fill="#555555" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13.5" font-weight="600">can be millions of tokens</text>
+<line x1="700.0" y1="100.0" x2="700.0" y2="132.0" stroke="#1A1A1A" stroke-width="2.2" marker-end="url(#arr)"/>
+<rect x="48.0" y="144.0" width="620.0" height="420.0" rx="22" ry="22" fill="#B0E0A0" stroke="#3A7A28" stroke-width="2.6"/>
+<circle cx="80" cy="176" r="12" fill="#FFFFFF" stroke="#3A7A28" stroke-width="1.6"/><text x="80" y="180.2" text-anchor="middle" fill="#3A7A28" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">P</text>
+<text x="358.0" y="182.0" text-anchor="middle" fill="#1E4A14" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="24" font-weight="800">Python REPL</text>
+<circle cx="96" cy="230" r="14" fill="#FFFFFF" stroke="#3A7A28" stroke-width="1.8"/>
+<text x="96.0" y="235.0" text-anchor="middle" fill="#3A7A28" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="800">1</text>
+<text x="126.0" y="235.0" text-anchor="start" fill="#1E4A14" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="16" font-weight="600">Store P as a string variable</text>
+<circle cx="96" cy="286" r="14" fill="#FFFFFF" stroke="#3A7A28" stroke-width="1.8"/>
+<text x="96.0" y="291.0" text-anchor="middle" fill="#3A7A28" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="800">2</text>
+<text x="126.0" y="291.0" text-anchor="start" fill="#1E4A14" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="16" font-weight="600">Register sub_RLM(query, slice)</text>
+<circle cx="96" cy="342" r="14" fill="#FFFFFF" stroke="#3A7A28" stroke-width="1.8"/>
+<text x="96.0" y="347.0" text-anchor="middle" fill="#3A7A28" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="800">3</text>
+<text x="126.0" y="347.0" text-anchor="start" fill="#1E4A14" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="16" font-weight="600">Execute generated Python</text>
+<circle cx="96" cy="398" r="14" fill="#FFFFFF" stroke="#3A7A28" stroke-width="1.8"/>
+<text x="96.0" y="403.0" text-anchor="middle" fill="#3A7A28" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="800">4</text>
+<text x="126.0" y="403.0" text-anchor="start" fill="#1E4A14" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="16" font-weight="600">Trim stdout to metadata</text>
+<circle cx="96" cy="454" r="14" fill="#FFFFFF" stroke="#3A7A28" stroke-width="1.8"/>
+<text x="96.0" y="459.0" text-anchor="middle" fill="#3A7A28" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="800">5</text>
+<text x="126.0" y="459.0" text-anchor="start" fill="#1E4A14" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="16" font-weight="600">Set Final when the answer is ready</text>
+<text x="358.0" y="530.0" text-anchor="middle" fill="#3A7A28" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13.5" font-weight="700">Root LM never sees raw prompt tokens</text>
+<rect x="732.0" y="144.0" width="620.0" height="420.0" rx="22" ry="22" fill="#D6EFFF" stroke="#045878" stroke-width="2.6"/>
+<circle cx="764" cy="176" r="12" fill="#FFFFFF" stroke="#045878" stroke-width="1.6"/><text x="764" y="180.2" text-anchor="middle" fill="#045878" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">L</text>
+<text x="1042.0" y="182.0" text-anchor="middle" fill="#044868" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="22" font-weight="800">PyTorch  ·  Language Model</text>
+<circle cx="780" cy="230" r="14" fill="#FFFFFF" stroke="#045878" stroke-width="1.8"/>
+<text x="780.0" y="235.0" text-anchor="middle" fill="#045878" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="800">1</text>
+<text x="810.0" y="235.0" text-anchor="start" fill="#044868" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="16" font-weight="600">model.generate(hist)</text>
+<circle cx="780" cy="286" r="14" fill="#FFFFFF" stroke="#045878" stroke-width="1.8"/>
+<text x="780.0" y="291.0" text-anchor="middle" fill="#045878" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="800">2</text>
+<text x="810.0" y="291.0" text-anchor="start" fill="#044868" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="16" font-weight="600">Qwen3-8B  /  RLM-Qwen3-8B</text>
+<circle cx="780" cy="342" r="14" fill="#FFFFFF" stroke="#045878" stroke-width="1.8"/>
+<text x="780.0" y="347.0" text-anchor="middle" fill="#045878" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="800">3</text>
+<text x="810.0" y="347.0" text-anchor="start" fill="#044868" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="16" font-weight="600">H100 GPU  ·  vLLM</text>
+<circle cx="780" cy="398" r="14" fill="#FFFFFF" stroke="#045878" stroke-width="1.8"/>
+<text x="780.0" y="403.0" text-anchor="middle" fill="#045878" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="800">4</text>
+<text x="810.0" y="403.0" text-anchor="start" fill="#044868" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="16" font-weight="600">Returns Python code blocks</text>
+<circle cx="780" cy="454" r="14" fill="#FFFFFF" stroke="#045878" stroke-width="1.8"/>
+<text x="780.0" y="459.0" text-anchor="middle" fill="#045878" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="800">5</text>
+<text x="810.0" y="459.0" text-anchor="start" fill="#044868" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="16" font-weight="600">Never sees the full prompt P</text>
+<text x="1042.0" y="530.0" text-anchor="middle" fill="#045878" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13.5" font-weight="700">Each call = one autoregressive pass</text>
+<path d="M 668 280 H 720" fill="none" stroke="#1A1A1A" stroke-width="2.4" marker-end="url(#arr)"/>
+<path d="M 720 428 H 668" fill="none" stroke="#1A1A1A" stroke-width="2.4" marker-end="url(#arr)"/>
+<text x="694.0" y="264.0" text-anchor="middle" fill="#1A1A1A" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">metadata</text>
+<text x="694.0" y="454.0" text-anchor="middle" fill="#1A1A1A" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">code</text>
+<rect x="668" y="338" width="64" height="26" rx="13" fill="#8A2A7A"/>
+<text x="700.0" y="356.0" text-anchor="middle" fill="#FFFFFF" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="11" font-weight="800">LOOP</text>
+<line x1="358.0" y1="564.0" x2="358.0" y2="596.0" stroke="#1A1A1A" stroke-width="2.2" marker-end="url(#arr)"/>
+<rect x="198.0" y="608.0" width="320.0" height="56.0" rx="28" ry="28" fill="#FFFFFF" stroke="#8A2A7A" stroke-width="2.4"/>
+<text x="358.0" y="644.0" text-anchor="middle" fill="#6A1858" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="16" font-weight="800">Final set in REPL?</text>
+<path d="M 518 636 H 620" fill="none" stroke="#3A7A28" stroke-width="2.4" marker-end="url(#arr-g)"/>
+<text x="560.0" y="624.0" text-anchor="middle" fill="#3A7A28" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">Yes</text>
+<rect x="632.0" y="608.0" width="200.0" height="56.0" rx="14" ry="14" fill="#B0E0A0" stroke="#3A7A28" stroke-width="2.4"/>
+<text x="732.0" y="644.0" text-anchor="middle" fill="#1E4A14" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="18" font-weight="800">OUTPUT</text>
+<path d="M 198 636 H 72 V 164 H 40" fill="none" stroke="#C0392B" stroke-width="2.2" stroke-dasharray="6 4" marker-end="url(#arr)"/>
+<text x="60.0" y="400.0" text-anchor="middle" fill="#C0392B" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">No</text>
+<text x="60.0" y="416.0" text-anchor="middle" fill="#C0392B" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="12" font-weight="800">repeat</text>
+<rect x="900.0" y="600.0" width="452.0" height="80.0" rx="14" ry="14" fill="#F0C0A8" stroke="#C06028" stroke-width="2.2" stroke-dasharray="5 4"/>
+<text x="1126.0" y="634.0" text-anchor="middle" fill="#6A2E10" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="16" font-weight="800">sub_RLM() recursive calls</text>
+<text x="1126.0" y="660.0" text-anchor="middle" fill="#6A2E10" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="13" font-weight="600">REPL code can spawn GPU passes in a loop</text>
+<path d="M 668 500 Q 780 580 900 640" fill="none" stroke="#C06028" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#arr-o)"/>
+<rect x="48.0" y="732.0" width="1304.0" height="88.0" rx="16" ry="16" fill="#FFFFFF" stroke="#C8C8C8" stroke-width="2.0"/>
+<text x="700.0" y="770.0" text-anchor="middle" fill="#1A1A1A" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="16" font-weight="700">Recursion is program control flow in the REPL, not extra transformer layers.</text>
+<text x="700.0" y="798.0" text-anchor="middle" fill="#555555" font-family="Inter, Liberation Sans, DejaVu Sans, sans-serif" font-size="14" font-weight="600">PyTorch / vLLM runs one generate() per root step and per sub-call.</text>
+</svg>

@@ -34,71 +34,23 @@ This repository does **not** reimplement that engine. It is the conference layer
 
 ## Architecture
 
+Same visual language as [KAITO](https://github.com/kaito-project/kaito): a control-plane box on top, a runtime pool in the middle, serving configs below, hardware at the bottom. Pink is this repository and the orchestrator. Green is the RLM surfaces. Blue is inference. Purple is the serving ablation. Dashed orange is metrics.
+
+<img src="docs/architecture.png" width="100%" title="RLM system architecture" alt="System architecture: OOLONG-synth and metrics feed a conference harness, which drives the RLM runtime (REPL + language model + vLLM) through three serving configs onto an NVIDIA H100.">
+
+Prefix caching is a vLLM feature. Concurrent sub-calls are an RLM runtime knob (`max_concurrent_subcalls`). What we add is the **ablation that isolates each**, plus the measurement harness around it.
+
 ### Upstream RLM loop
 
 The control flow is programmatic, not extra transformer layers. PyTorch (via vLLM) runs one autoregressive `generate()` per root step and per sub-call.
 
-```mermaid
-flowchart TB
-    P["① User prompt P<br/>can be millions of tokens"] --> REPL
-
-    subgraph REPL["Python REPL environment"]
-        direction TB
-        V["P stored as a string variable"]
-        H["sub_RLM(query, slice) registered"]
-        X["Execute generated Python"]
-        S["stdout trimmed to metadata"]
-        F["Final set when the answer is ready"]
-    end
-
-    subgraph LM["PyTorch language model · vLLM"]
-        G["model.generate(hist)"]
-        W["Qwen3-8B or RLM-Qwen3-8B"]
-        C["Returns Python code — never raw P"]
-    end
-
-    REPL -->|"② constant-size metadata"| LM
-    LM -->|"③ Python code to run"| REPL
-    REPL -->|"sub_RLM() in loops"| LM
-    REPL --> D{"④ Final set?"}
-    D -->|yes| OUT["⑤ OUTPUT"]
-    D -->|no| REPL
-```
+<img src="docs/architecture-loop.png" width="90%" title="RLM inference loop" alt="RLM inference loop: user prompt P is stored in a Python REPL; the language model exchanges constant-size metadata for Python code until Final is set.">
 
 **Three design choices that matter**
 
 1. **Prompt as environment data.** `P` lives outside the transformer as a REPL variable.
 2. **Constant-size root context.** The root LM sees length, a prefix, and stdout summaries — not the raw tokens.
 3. **Symbolic recursion.** The model writes Python that peeks, greps, chunks, and calls `sub_RLM()` inside loops. Recursion is program control flow, not extra layers.
-
-### Where this repo sits on that stack
-
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│  Conference layer (this repo)                                   │
-│  poster/          PDF + interactive HTML                        │
-│  plot_results.py  poster-ready charts from JSON                 │
-│  run_benchmark.py 2 models × 3 serving configs on OOLONG-synth  │
-│  metrics/         wall-clock, peak VRAM, tokens, RLM trajectory │
-│  tasks/           OOLONG-synth loader + official-style scorer   │
-│  serve_model.sh   vLLM launch + health check                    │
-└──────────────────────────────┬──────────────────────────────────┘
-                               │ rlm.completion(prompt, root_prompt)
-                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  Upstream RLM orchestrator  (rlms)                              │
-│  assemble hist → call LM → exec code → trim stdout → repeat     │
-│  max_iterations=30   max_depth=1   max_concurrent_subcalls=1|4  │
-└──────────────────────────────┬──────────────────────────────────┘
-                               │ OpenAI-compatible HTTP
-                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  vLLM on one NVIDIA H100 80GB                                   │
-│  baseline | --enable-prefix-caching | prefix cache + 4-way batch│
-└─────────────────────────────────────────────────────────────────┘
-```
-
-Prefix caching is a vLLM feature. Concurrent sub-calls are an RLM runtime knob (`max_concurrent_subcalls`). What we add is the **ablation that isolates each**, plus the measurement harness around it.
 
 ---
 
@@ -251,6 +203,10 @@ Prefix caching is a **server** flag (`--enable-prefix-caching`). Concurrent sub-
 ```text
 .
 ├── README.md
+├── docs/
+│   ├── architecture.png         # system diagram (KAITO-style)
+│   ├── architecture-loop.png    # RLM inference loop
+│   └── generate_architecture.py
 ├── benchmark/
 │   ├── run_benchmark.py     # 2×3 ablation runner
 │   ├── plot_results.py      # wall-clock, VRAM, accuracy, speedup, iterations
