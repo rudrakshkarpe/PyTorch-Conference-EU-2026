@@ -2,232 +2,109 @@
 
 **PyTorch Conference EU 2026 · Paris**
 
-Conference artifact for the poster and talk *Recursive Language Models (RLMs): Scaling to Infinite Context via Programmatic Decomposition*, including the H100 inference study *Accelerating RLM Inference with vLLM Optimizations*.
+Rudraksh Karpe (Simplismart) · Shivay Lamba (Qualcomm)
 
-**Rudraksh Karpe** ([@rudrakshkarpe](https://github.com/rudrakshkarpe)) · Simplismart  
-**Shivay Lamba** ([@shivaylamba](https://github.com/shivaylamba)) · Qualcomm
+An RLM keeps a long input in a Python environment and uses a language model to write programs over it. Those programs can inspect text, delegate subproblems to model calls, and combine their results. This repository accompanies our conference poster and explores the serving cost of that approach with Qwen3-8B, vLLM, and a single H100.
 
-[Poster (PDF)](./poster/PyTorch%20Conference_2026_Paris.pdf) · [Interactive poster](./poster/pytorch-rlm-poster.html) · [Paper](https://arxiv.org/abs/2512.24601) · [Upstream RLM library](https://github.com/alexzhang13/rlm)
+[Poster PDF](poster/PyTorch%20Conference_2026_Paris.pdf) · [Poster HTML source](poster/pytorch-rlm-poster.html) · [Research paper](https://arxiv.org/abs/2512.24601v2) · [Benchmark guide](benchmark/README.md)
 
----
+## How an RLM works
 
-## What this repository is
+The key distinction is **where the long input lives**. The root model receives a description of the input and a way to access it; the full input is held in REPL state. Generated Python selects what to inspect or pass into further model calls. This is the inference scaffold described by [Zhang, Kraska, and Khattab, §2 and Algorithm 1](https://arxiv.org/html/2512.24601v2#S2).
 
-Recursive Language Models are an inference paradigm from MIT OASYS ([Zhang, Kraska, Khattab](https://arxiv.org/abs/2512.24601)). An RLM is a thin wrapper around any language model: the prompt lives as data in a Python REPL, and the model writes code to peek, chunk, search, and recursively call itself on smaller slices. The root model never sees the raw long context — only constant-size metadata.
+![Conceptual RLM loop: the root model exchanges code and bounded feedback with a persistent Python REPL. The REPL holds the long input, can call models on selected text, and returns the final answer.](docs/architecture-loop.svg)
 
-This repository does **not** reimplement that engine. It is the conference layer on top of it:
+*Figure 1. Conceptual RLM algorithm, redrawn from the paper. Sub-calls may recursively run the same scaffold; the benchmark below uses a shallower configuration.*
 
-1. A concise architecture write-up of how RLMs sit on PyTorch / vLLM.
-2. An H100 benchmark harness that compares base **Qwen3-8B** against **RLM-Qwen3-8B** under three vLLM serving configurations.
-3. The poster (PDF + HTML) used at PyTorch Conference EU 2026.
+Three details matter when reading the diagram:
 
-| Layer | What it is | Source |
-| --- | --- | --- |
-| RLM inference paradigm | Prompt-as-REPL-data + recursive `sub_RLM()` | [Zhang et al., 2026](https://arxiv.org/abs/2512.24601) |
-| Runtime | `rlm.completion()` over a local / IPython REPL | [`alexzhang13/rlm`](https://github.com/alexzhang13/rlm) (`rlms`) |
-| Fine-tuned weights | SFT on 1K distilled RLM trajectories | [`mit-oasys/rlm-qwen3-8b-v0.1`](https://huggingface.co/mit-oasys/rlm-qwen3-8b-v0.1) |
-| Long-context tasks | OOLONG-synth | [`oolongbench/oolong-synth`](https://huggingface.co/datasets/oolongbench/oolong-synth) |
-| Serving engine | OpenAI-compatible local inference | [vLLM](https://github.com/vllm-project/vllm) |
-| **This repo** | H100 ablation, metrics, charts, poster | Sections below |
+- **State persists between reasoning steps.** Input text and intermediate values remain available to the generated program.
+- **Model calls still have context limits.** Metadata and feedback can be bounded per step while the root history grows. Selected excerpts can enter that history or a sub-call.
+- **Recursion is in the program.** It does not add transformer layers or extend the model's native context window.
 
----
+## How this repository runs it
 
-## Architecture
+The repository supplies the dataset loader, experiment presets, measurements, charts, and conference materials. The RLM runtime and model checkpoints come from upstream projects.
 
-Same visual language as [KAITO](https://github.com/kaito-project/kaito): a control-plane box on top, a runtime pool in the middle, serving configs below, hardware at the bottom. Pink is this repository and the orchestrator. Green is the RLM surfaces. Blue is inference. Purple is the serving ablation. Dashed orange is metrics.
+![Implementation: a Python benchmark runner passes OOLONG samples to a local RLM runtime. Root and sub-call requests share one vLLM model server on an H100. The harness scores answers and records timing, trajectory, token usage, and sampled GPU memory.](docs/architecture.svg)
 
-<img src="docs/architecture.png" width="100%" title="RLM system architecture" alt="System architecture: OOLONG-synth and metrics feed a conference harness, which drives the RLM runtime (REPL + language model + vLLM) through three serving configs onto an NVIDIA H100.">
+*Figure 2. Execution and measurement boundaries derived from the [runner](benchmark/run_benchmark.py), [server launcher](benchmark/serve_model.sh), and [collector](benchmark/metrics/collector.py). Boxes inside the Python boundary are software components, not independent services. The server box groups its API, execution stack, and GPU allocation.*
 
-Prefix caching is a vLLM feature. Concurrent sub-calls are an RLM runtime knob (`max_concurrent_subcalls`). What we add is the **ablation that isolates each**, plus the measurement harness around it.
+The runner calls `rlm.completion(sample.prompt, root_prompt=sample.question)` with a local REPL, at most 30 root iterations, and `max_depth=1`. In the [upstream revision reviewed](https://github.com/alexzhang13/rlm/blob/d04208afbad29ca675ab13478c40ee8bebc84bfe/rlm/core/rlm.py), that depth makes sub-calls plain LM completions rather than nested REPL loops. Root and sub-calls use the same configured model endpoint. The model's 32,768-token serving limit and the loader's 131,072-token input filter apply at different boundaries.
 
-### Upstream RLM loop
+[Architecture sources and implementation notes](docs/architecture.md) document the evidence behind both figures and how to regenerate them.
 
-The control flow is programmatic, not extra transformer layers. PyTorch (via vLLM) runs one autoregressive `generate()` per root step and per sub-call.
+## What the benchmark compares
 
-<img src="docs/architecture-loop.png" width="90%" title="RLM inference loop" alt="RLM inference loop: user prompt P is stored in a Python REPL; the language model exchanges constant-size metadata for Python code until Final is set.">
+The intended study is a two-checkpoint, three-preset comparison. Both checkpoints run through the RLM scaffold:
 
-**Three design choices that matter**
-
-1. **Prompt as environment data.** `P` lives outside the transformer as a REPL variable.
-2. **Constant-size root context.** The root LM sees length, a prefix, and stdout summaries — not the raw tokens.
-3. **Symbolic recursion.** The model writes Python that peeks, greps, chunks, and calls `sub_RLM()` inside loops. Recursion is program control flow, not extra layers.
-
----
-
-## What we contributed
-
-On top of the published RLM system we built a reproducible inference study and the conference materials.
-
-**1. Three-config serving ablation on a single H100**
-
-Same seeds, same OOLONG-synth samples, same RLM hyperparameters. Only the serving path changes.
-
-| Config | Prefix caching | Concurrent sub-calls | What it measures |
-| --- | :---: | :---: | --- |
-| `baseline` | off | 1 (sequential) | vLLM defaults |
-| `prefix-cache` | on | 1 (sequential) | reused REPL / prompt prefixes |
-| `prefix-cache-batched` | on | 4 (parallel) | prefix cache + parallel `sub_RLM()` |
-
-RLM queries are prefix-heavy: the root prompt and shared context slices repeat across iterations and sub-calls. Automatic prefix caching should cut prefill. Batching sub-calls should cut wall-clock when the model partitions context and maps `sub_RLM()` over chunks.
-
-**2. End-to-end benchmark harness**
-
-- `serve_model.sh` — bring up / tear down a vLLM server, wait on `/health`.
-- `run_benchmark.py` — drive `RLM(backend="vllm")` over OOLONG-synth.
-- `metrics/collector.py` — background VRAM poll (`pynvml` or `nvidia-smi`), wall-clock timer, trajectory extraction (REPL iterations, sub-call count, token usage).
-- `tasks/oolong_loader.py` — Hugging Face load + scoring that mirrors the official OOLONG helpers.
-
-**3. Poster-ready reporting**
-
-`plot_results.py` writes five charts from the JSON dumps: wall-clock, peak VRAM, accuracy, speedup vs baseline, iterations / sub-calls.
-
-**4. Conference poster**
-
-Print PDF and a standalone HTML version of the architecture, related-work comparison, and paper results.
-
-We did not train RLM-Qwen3-8B, and we did not change the RLM algorithm. The model is the MIT OASYS SFT checkpoint (1K trajectories distilled from Qwen3-Coder-480B, about 48 H100-hours). Our work is how that system is served, measured, and presented.
-
----
-
-## Benchmark design
-
-### Models
-
-| Model | Role |
+| Checkpoint | Role |
 | --- | --- |
-| [`Qwen/Qwen3-8B`](https://huggingface.co/Qwen/Qwen3-8B) | Base checkpoint, no RLM fine-tuning |
-| [`mit-oasys/rlm-qwen3-8b-v0.1`](https://huggingface.co/mit-oasys/rlm-qwen3-8b-v0.1) | RLM-SFT checkpoint |
+| [`Qwen/Qwen3-8B`](https://huggingface.co/Qwen/Qwen3-8B) | Base weights |
+| [`mit-oasys/rlm-qwen3-8b-v0.1`](https://huggingface.co/mit-oasys/rlm-qwen3-8b-v0.1) | Upstream weights fine-tuned for RLM use |
 
-Both run through the same RLM scaffold. The fine-tuned weights are what the paper reports as a **+28.3% median** gain over the base model on the paper's task suite.
+| Runner preset | Intended server prefix caching | `max_concurrent_subcalls` passed to RLM |
+| --- | --- | ---: |
+| `baseline` | Disabled | 1 |
+| `prefix-cache` | Enabled | 1 |
+| `prefix-cache-batched` | Enabled | 4 |
 
-### Metrics (per sample)
+**These are requested settings, not verified execution states.** The runner does not configure or inspect the server's cache. The launcher only supplies an enable flag, so omitting it does not establish a cache-off baseline across vLLM versions. At `max_depth=1`, the reviewed upstream runtime also bypasses the recursive thread pool controlled by `max_concurrent_subcalls`; changing 1 to 4 does not establish a sequential-versus-parallel comparison. See the [benchmark limitations](benchmark/README.md#before-interpreting-results).
 
-| Metric | How it is collected |
+The two performance hypotheses are distinct:
+
+- **Prefix reuse:** vLLM can reuse cached KV blocks for matching prompt prefixes, saving prefill work. It does not save token decoding work, and different context slices need not share reusable prefixes. See [vLLM automatic prefix caching](https://docs.vllm.ai/en/latest/features/automatic_prefix_caching/).
+- **Independent sub-calls:** overlapping independent requests could reduce elapsed time if the generated program exposes that parallelism and the runtime and server execute it. A higher concurrency setting alone is insufficient evidence.
+
+Samples are selected from the OOLONG-synth test split, filtered by context length, sorted by `context_window_id`, and capped at 20 by default. This is a small serving experiment; it does not reproduce the paper's full evaluation protocol.
+
+## Measurements and results
+
+| Recorded field | Meaning and measurement boundary |
 | --- | --- |
-| Task score | OOLONG-synth accuracy in `[0, 1]` |
-| Wall-clock | End-to-end seconds around `rlm.completion()` |
-| Peak VRAM | Max GPU memory (MiB), 0.5s poll |
-| Tokens | Input + output from the RLM usage summary |
-| REPL iterations | Length of the logged trajectory |
-| Sub-call count | `rlm_calls` inside executed code blocks |
+| Task score | Local OOLONG answer scorer in `[0, 1]`; numerical answers can receive partial credit |
+| Wall-clock time | Timed completion call plus metric extraction; excludes dataset loading, server startup, and answer scoring |
+| Peak VRAM | Maximum device-wide memory observed at 0.5-second intervals; includes server allocations and can miss shorter peaks |
+| Input / output tokens | Usage summary reported by the RLM runtime |
+| Iterations / sub-calls | Counts extracted from trajectory metadata, when that schema is available |
 
-### Paper results we present (not from this harness)
+The runner writes per-sample records, errors, and aggregates. Aggregates include only samples without recorded errors. Missing trajectory metadata currently produces zero counts, so inspect logs before treating zero as an observed absence of work.
 
-These numbers are from Zhang et al. They are on the poster so the talk has the research context. The H100 suite above is our reproduction / serving study on Qwen3-8B.
+**No H100 result JSON files are committed in this checkout.** The poster includes published research results; this README makes no measured speedup claim for the serving presets. For the paper's cross-task evaluation and fine-tuning results, use [Table 1 and Appendix A](https://arxiv.org/html/2512.24601v2), rather than comparing its scores directly with this harness's default 20-sample slice.
 
-**GPT-5 family (paper; RLM sub-calls to GPT-5-mini)**
+## Run the benchmark
 
-| Method | CodeQA | Browse+ | OOLONG | O-Pairs |
-| --- | ---: | ---: | ---: | ---: |
-| Base GPT-5 | 24* | 0* | 44 | &lt;0.1 |
-| CodeAct + BM25 | 22* | 51 | 38 | 24.7 |
-| Summary agent | 58 | 70.5 | 46 | &lt;0.1 |
-| **RLM** | **62** | **91.3** | **56.5** | **58.0** |
-
-**Qwen3-8B (paper; the open model this repo serves)**
-
-| Setting | CodeQA | Browse+ | OOLONG | O-Pairs |
-| --- | ---: | ---: | ---: | ---: |
-| Base | 4* | 0* | 0* | 0.1 |
-| RLM scaffold | 26 | 2 | 24 | 4.3 |
-| **RLM-Qwen3-8B** | **32** | **14** | **32** | **5.2** |
-
-`*` hit context limits on some runs.
-
----
-
-## Reproduce the H100 study
-
-Hardware: one NVIDIA H100 80GB (or similar). Software: Python 3.11+, CUDA drivers, `git`, `curl`, `lsof`.
+Use a CUDA GPU host with Python 3.11+, NVIDIA drivers, `git`, `curl`, and `lsof`. The target configuration is one H100 80GB. Read the [version and configuration checks](benchmark/README.md#before-interpreting-results) before running comparisons.
 
 ```bash
-cd benchmark
+git clone https://github.com/rudrakshkarpe/PyTorch-Conference-EU-2026.git
+cd PyTorch-Conference-EU-2026/benchmark
 bash setup_h100.sh
 source .venv/bin/activate
-```
 
-`setup_h100.sh` creates the venv, installs [`requirements.txt`](./benchmark/requirements.txt), and pre-downloads both checkpoints.
-
-```bash
-# Base model
-bash serve_model.sh --model Qwen/Qwen3-8B
-python run_benchmark.py --model Qwen/Qwen3-8B --config baseline --samples 20
-# restart with caching for the two optimized configs
+# Smoke run with caching explicitly requested; this is not an ablation result.
 bash serve_model.sh --model Qwen/Qwen3-8B --prefix-caching
-python run_benchmark.py --model Qwen/Qwen3-8B --config prefix-cache --samples 20
-python run_benchmark.py --model Qwen/Qwen3-8B --config prefix-cache-batched --samples 20
-
-# Fine-tuned RLM weights
-bash serve_model.sh --model mit-oasys/rlm-qwen3-8b-v0.1
-python run_benchmark.py --model mit-oasys/rlm-qwen3-8b-v0.1 --config baseline --samples 20
-bash serve_model.sh --model mit-oasys/rlm-qwen3-8b-v0.1 --prefix-caching
-python run_benchmark.py --model mit-oasys/rlm-qwen3-8b-v0.1 --config prefix-cache --samples 20
-python run_benchmark.py --model mit-oasys/rlm-qwen3-8b-v0.1 --config prefix-cache-batched --samples 20
-
-python plot_results.py
+python run_benchmark.py --model Qwen/Qwen3-8B --config prefix-cache --samples 1
 ```
 
-JSON and PNGs land in `benchmark/results/`.
+The setup script installs dependencies and downloads both checkpoints. The launcher replaces any process listening on its selected port. Results and RLM logs go to `benchmark/results/`; `python plot_results.py` produces the five charts once result files exist.
 
-Prefix caching is a **server** flag (`--enable-prefix-caching`). Concurrent sub-calls are a **client** flag (`--config prefix-cache-batched` sets `max_concurrent_subcalls=4`). Restart vLLM when you change the cache setting; you do not need a restart to change the RLM config.
+The [benchmark guide](benchmark/README.md) contains the full command sequence, CLI defaults, output files, and interpretation limits.
 
-### CLI
+## Repository guide
 
-`run_benchmark.py`
+| Path | Contents |
+| --- | --- |
+| [`benchmark/`](benchmark/) | Runner, vLLM launcher, setup, dataset loading, scoring, and chart generation |
+| [`docs/architecture.md`](docs/architecture.md) | Figure sources, claim-to-code mapping, and rendering instructions |
+| [`docs/generate_architecture.py`](docs/generate_architecture.py) | Editable source for both SVG figures and PNG exports |
+| [`poster/`](poster/) | Conference PDF, standalone HTML poster, and assets |
 
-| Flag | Default | |
-| --- | --- | --- |
-| `--model` | required | Hugging Face model id |
-| `--config` | required | `baseline` · `prefix-cache` · `prefix-cache-batched` |
-| `--samples` | `20` | OOLONG-synth cap |
-| `--vllm-url` | `http://localhost:8000/v1` | |
-| `--gpu-device` | `0` | VRAM poll device |
-| `--task-filter` | unset | substring match on the dataset name |
-| `--max-context-len` | `131072` | |
-| `--output-dir` | `results/` | |
+## Credits and citation
 
-`serve_model.sh`
+Conference materials and benchmark harness: [Rudraksh Karpe](https://github.com/rudrakshkarpe) and [Shivay Lamba](https://github.com/shivaylamba).
 
-| Flag | Default | |
-| --- | --- | --- |
-| `--model` | required | |
-| `--port` | `8000` | |
-| `--prefix-caching` | off | passes `--enable-prefix-caching` |
-| `--gpu-mem` | `0.90` | |
-| `--dtype` | `bfloat16` | |
-
----
-
-## Repository layout
-
-```text
-.
-├── README.md
-├── docs/
-│   ├── architecture.png         # system diagram (KAITO-style)
-│   ├── architecture-loop.png    # RLM inference loop
-│   └── generate_architecture.py
-├── benchmark/
-│   ├── run_benchmark.py     # 2×3 ablation runner
-│   ├── plot_results.py      # wall-clock, VRAM, accuracy, speedup, iterations
-│   ├── serve_model.sh       # vLLM serve + /health wait
-│   ├── setup_h100.sh        # venv, deps, weight download
-│   ├── requirements.txt
-│   ├── metrics/collector.py # VRAM thread, timer, RLM metadata
-│   ├── tasks/oolong_loader.py
-│   └── results/             # JSON dumps + PNG charts
-└── poster/
-    ├── PyTorch Conference_2026_Paris.pdf
-    ├── pytorch-rlm-poster.html
-    ├── pytorch-logo.png
-    └── qr-code.png
-```
-
----
-
-## Acknowledgments
-
-RLMs, the `rlms` library, and the RLM-Qwen3-8B checkpoint are the work of **Alex L. Zhang, Tim Kraska, and Omar Khattab** and the MIT OASYS lab. OOLONG scoring follows the official helpers from [`abertsch72/oolong`](https://github.com/abertsch72/oolong). vLLM automatic prefix caching is from the vLLM project.
+The RLM method, [runtime](https://github.com/alexzhang13/rlm), and fine-tuned checkpoint are upstream work by Alex L. Zhang, Tim Kraska, Omar Khattab, and MIT OASYS. The benchmark uses [OOLONG-synth](https://huggingface.co/datasets/oolongbench/oolong-synth), with local scoring adapted from [OOLONG's evaluation helpers](https://github.com/abertsch72/oolong), and [vLLM](https://github.com/vllm-project/vllm) for serving.
 
 ```bibtex
 @misc{zhang2026recursivelanguagemodels,

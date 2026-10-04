@@ -1,371 +1,178 @@
 #!/usr/bin/env python3
-"""Render KAITO-style architecture diagrams (SVG + PNG)."""
+"""Generate the README's research and implementation figures.
 
+SVG needs only Python's standard library. Add --png with CairoSVG installed to
+also regenerate the 2x PNG fallbacks. See architecture.md for sources and scope.
+"""
 from __future__ import annotations
 
+import argparse
+from html import escape
 from pathlib import Path
 
-import cairosvg
-
 OUT = Path(__file__).resolve().parent
-
-# Sampled from kaito-project/kaito website/static/img/arch.png
-BG = "#F2F2F2"
-GROUP = "#FBFBFB"
-GROUP_STROKE = "#C8C8C8"
-PINK = "#E098D8"
-PINK_INK = "#6A1858"
-PINK_STROKE = "#8A2A7A"
-GREEN = "#B0E0A0"
-GREEN_INK = "#1E4A14"
-GREEN_STROKE = "#3A7A28"
-BLUE = "#0898D0"
-BLUE_STROKE = "#045878"
-ORANGE = "#F0C0A8"
-ORANGE_INK = "#6A2E10"
-ORANGE_STROKE = "#C06028"
-PURPLE = "#8890E0"
-PURPLE_STROKE = "#3A4088"
-GRAY_STROKE = "#6E6E6E"
-INK = "#1A1A1A"
-MUTED = "#555555"
-WHITE = "#FFFFFF"
-FONT = "Inter, Liberation Sans, DejaVu Sans, sans-serif"
+INK = '#202b33'
+MUTED = '#56646f'
+RULE = '#c7cfd4'
+BLUE = '#285e83'
+BLUE_BG = '#eef5fa'
+GREEN = '#326754'
+GREEN_BG = '#eff6f1'
+FONT = 'Arial, Helvetica, sans-serif'
 
 
-def esc(s: str) -> str:
-    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+def text(x, y, value, size=17, color=INK, weight=400, anchor='start'):
+    return (f'<text x="{x}" y="{y}" font-family="{FONT}" font-size="{size}" '
+            f'font-weight="{weight}" fill="{color}" text-anchor="{anchor}">{escape(value)}</text>')
 
 
-def rect(x, y, w, h, fill, stroke, sw=2.4, r=18, dash=None) -> str:
-    d = f' stroke-dasharray="{dash}"' if dash else ""
-    return (
-        f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" '
-        f'rx="{r}" ry="{r}" fill="{fill}" stroke="{stroke}" stroke-width="{sw}"{d}/>'
-    )
+def box(x, y, w, h, fill='#fff', stroke=RULE):
+    return (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="4" '
+            f'fill="{fill}" stroke="{stroke}" stroke-width="1.5"/>')
 
 
-def txt(x, y, s, size=18, weight=700, fill=INK, anchor="middle") -> str:
-    return (
-        f'<text x="{x:.1f}" y="{y:.1f}" text-anchor="{anchor}" fill="{fill}" '
-        f'font-family="{FONT}" font-size="{size}" font-weight="{weight}">{esc(s)}</text>'
-    )
+def arrow(d, dashed=False, color=INK):
+    dash = ' stroke-dasharray="6 5"' if dashed else ''
+    return (f'<path d="{d}" fill="none" stroke="{color}" stroke-width="1.6" '
+            f'marker-end="url(#arrow)"{dash}/>')
 
 
-def marker(mid: str, color: str) -> str:
-    return (
-        f'<marker id="{mid}" markerWidth="10" markerHeight="8" refX="9" refY="4" '
-        f'orient="auto" markerUnits="strokeWidth">'
-        f'<polygon points="0 0, 10 4, 0 8" fill="{color}"/></marker>'
-    )
+def rule(x1, y, x2):
+    return f'<path d="M{x1} {y} H{x2}" stroke="{RULE}" stroke-width="1"/>'
 
 
-def defs() -> str:
-    return (
-        "<defs>"
-        + marker("arr", INK)
-        + marker("arr-p", PINK_STROKE)
-        + marker("arr-g", GREEN_STROKE)
-        + marker("arr-b", BLUE_STROKE)
-        + marker("arr-o", ORANGE_STROKE)
-        + marker("arr-u", PURPLE_STROKE)
-        + "</defs>"
-    )
+def figure(height, title, description, content):
+    return '\n'.join([
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="960" height="{height}" viewBox="0 0 960 {height}" role="img" aria-labelledby="title desc">',
+        f'<title id="title">{escape(title)}</title>',
+        f'<desc id="desc">{escape(description)}</desc>',
+        '<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#202b33"/></marker></defs>',
+        f'<rect width="960" height="{height}" fill="#ffffff"/>',
+        *content, '</svg>',
+    ]) + '\n'
 
 
-def line(x1, y1, x2, y2, color=INK, sw=2.2, m="arr", dash=None) -> str:
-    d = f' stroke-dasharray="{dash}"' if dash else ""
-    mk = f' marker-end="url(#{m})"' if m else ""
-    return (
-        f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
-        f'stroke="{color}" stroke-width="{sw}"{d}{mk}/>'
-    )
-
-
-def path(d, color=INK, sw=2.2, m="arr", dash=None) -> str:
-    ds = f' stroke-dasharray="{dash}"' if dash else ""
-    mk = f' marker-end="url(#{m})"' if m else ""
-    return f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{sw}"{ds}{mk}/>'
-
-
-def badge(cx, cy, fill, stroke, glyph: str) -> str:
-    return (
-        f'<circle cx="{cx}" cy="{cy}" r="12" fill="{fill}" stroke="{stroke}" stroke-width="1.6"/>'
-        f'<text x="{cx}" y="{cy + 4.2}" text-anchor="middle" fill="{stroke}" '
-        f'font-family="{FONT}" font-size="12" font-weight="800">{esc(glyph)}</text>'
-    )
-
-
-def pill(x, y, w, h, fill, stroke, label, ink=WHITE, sw=1.4) -> str:
-    return rect(x, y, w, h, fill, stroke, sw=sw, r=h / 2) + txt(
-        x + w / 2, y + h * 0.68, label, size=13, weight=800, fill=ink
-    )
-
-
-def render(svg: str, name: str, w: int, h: int) -> None:
-    svg_path = OUT / f"{name}.svg"
-    png_path = OUT / f"{name}.png"
-    svg_path.write_text(svg, encoding="utf-8")
-    cairosvg.svg2png(
-        url=str(svg_path),
-        write_to=str(png_path),
-        output_width=w * 2,
-        output_height=h * 2,
-        background_color=BG,
-    )
-    print(f"wrote {png_path} ({png_path.stat().st_size} bytes, {w * 2}x{h * 2})")
-
-
-def system_arch() -> None:
-    """Overview diagram — same visual grammar as KAITO arch.png."""
-    W, H = 1760, 1040
-    parts = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">',
-        defs(),
-        f'<rect width="{W}" height="{H}" fill="{BG}"/>',
+def inference_loop():
+    s = [
+        text(32, 35, '01 / RLM INFERENCE', 13, MUTED, 700),
+        text(32, 70, 'Long input lives in the program’s state', 28, weight=700),
+        text(32, 99, 'Conceptual loop from Zhang et al., §2 / Algorithm 1. Serving details are in Figure 2.', 16, MUTED),
+        rule(32, 120, 928),
+        text(688, 159, 'Long input P', 19, weight=700, anchor='middle'),
+        arrow('M688 170 V219'),
+        text(704, 200, 'load once', 15, MUTED),
+        box(42, 220, 294, 168, BLUE_BG, BLUE),
+        text(62, 251, 'Root language model', 22, BLUE, 700),
+        text(62, 281, 'Task + input metadata', 18),
+        text(62, 307, 'Code and feedback history', 18),
+        text(62, 359, 'Each call has a finite context window.', 15, MUTED),
+        box(548, 220, 380, 168, GREEN_BG, GREEN),
+        text(568, 251, 'Persistent Python REPL', 22, GREEN, 700),
+        text(568, 281, 'P · selected slices · intermediate values', 18),
+        text(568, 307, 'Execute code; retain state across turns', 18),
+        text(568, 359, 'Full input is available through variables.', 15, MUTED),
+        arrow('M336 275 H548'),
+        text(442, 262, 'generated code', 16, anchor='middle'),
+        arrow('M548 330 H336'),
+        text(442, 319, 'bounded feedback', 16, anchor='middle'),
+        # Initial metadata takes a separate path from ongoing feedback.
+        arrow('M585 220 V183 H189 V220'),
+        text(375, 172, 'initial input metadata', 15, MUTED, anchor='middle'),
+        box(548, 466, 380, 107, BLUE_BG, BLUE),
+        text(568, 498, 'Sub-call on a constructed prompt', 21, BLUE, 700),
+        text(568, 526, 'Selected text or a transformed subproblem', 17),
+        text(568, 551, 'May recurse if the runtime permits it', 16, MUTED),
+        arrow('M614 388 V466'),
+        text(602, 424, 'prompt', 15, MUTED, anchor='end'),
+        arrow('M858 466 V388'),
+        text(871, 438, 'result', 15, MUTED),
+        # A final answer is read from state, not forced through the root output.
+        arrow('M548 367 H505 V518 H336'),
+        text(491, 483, 'finish', 15, MUTED, anchor='end'),
+        box(42, 485, 294, 68),
+        text(62, 513, 'Return final answer', 20, weight=700),
+        text(62, 538, 'Read the completed result from state', 15, MUTED),
+        rule(32, 605, 928),
+        text(32, 635, 'The full input stays outside the root prompt; selected excerpts can still enter model calls.', 17),
+        text(32, 661, 'History can grow across turns. This is programmatic decomposition, not an unlimited model window.', 16, MUTED),
     ]
+    return figure(688, 'RLM inference loop',
+                  'Long input is loaded into persistent REPL state. The root model receives metadata, generates code, and receives bounded feedback. Code can make sub-calls on selected text and retain their results. A final answer is returned from state. This is the paper’s conceptual algorithm, not a claim of unlimited recursion in this benchmark.', s)
 
-    # External dataset (dashed, like External Gateway)
-    parts += [
-        rect(40, 40, 260, 108, WHITE, GRAY_STROKE, sw=2.2, r=16, dash="7 5"),
-        badge(68, 68, WHITE, GRAY_STROKE, "D"),
-        txt(178, 78, "OOLONG-synth", 19, 800),
-        txt(178, 104, "Long-context tasks", 13.5, 600, MUTED),
-        txt(178, 126, "Hugging Face dataset", 13.5, 600, MUTED),
+
+def architecture():
+    s = [
+        text(32, 35, '02 / BENCHMARK IMPLEMENTATION', 13, MUTED, 700),
+        text(32, 70, 'One Python harness, one model server', 28, weight=700),
+        text(32, 99, 'Root and sub-call requests use the same configured endpoint and checkpoint.', 16, MUTED),
+        rule(32, 120, 928),
+        text(42, 153, 'PYTHON HOST PROCESS', 13, MUTED, 700),
+        text(702, 153, 'vLLM MODEL SERVER', 13, MUTED, 700),
+        box(32, 170, 602, 281, '#fafbfc'),
+        box(54, 194, 230, 68),
+        text(70, 220, 'OOLONG-synth', 20, weight=700),
+        text(70, 244, 'Filtered, sorted test samples', 15, MUTED),
+        arrow('M169 262 V313'),
+        text(184, 292, 'prompt + question', 15, MUTED),
+        box(54, 313, 230, 109),
+        text(70, 342, 'Benchmark runner', 20, weight=700),
+        text(70, 370, 'One sample at a time', 17),
+        text(70, 398, 'run_benchmark.py', 15, MUTED),
+        box(356, 194, 256, 228, GREEN_BG, GREEN),
+        text(374, 226, 'Upstream RLM runtime', 20, GREEN, 700),
+        text(374, 255, 'Root history + local REPL', 17),
+        text(374, 281, 'Constructs model requests', 17),
+        rule(374, 302, 594),
+        text(374, 329, 'max_iterations = 30', 16),
+        text(374, 355, 'max_depth = 1', 16),
+        text(374, 395, 'Sub-calls are leaf LM calls.*', 15, MUTED),
+        arrow('M284 335 H356'),
+        text(320, 323, 'call', 14, MUTED, anchor='middle'),
+        arrow('M356 390 H284'),
+        text(320, 381, 'return', 14, MUTED, anchor='middle'),
+        box(702, 170, 226, 281, BLUE_BG, BLUE),
+        text(720, 204, 'OpenAI-compatible API', 18, BLUE, 700),
+        text(720, 235, 'vLLM scheduler', 18),
+        text(720, 263, 'Model weights + KV cache', 16),
+        text(720, 299, 'PyTorch / CUDA execution', 16),
+        rule(720, 322, 910),
+        text(720, 351, '1 × NVIDIA H100 80 GB', 17, weight=700),
+        text(720, 378, 'bfloat16 · 32,768 tokens', 16),
+        text(720, 405, 'One checkpoint per run', 15, MUTED),
+        arrow('M612 239 H702'),
+        text(657, 224, 'requests', 14, MUTED, anchor='middle'),
+        arrow('M702 286 H612'),
+        text(657, 310, 'responses', 14, MUTED, anchor='middle'),
+        # Observation is distinguished from the inference path by dashes.
+        box(54, 524, 558, 95),
+        text(72, 554, 'Score and record each sample', 21, weight=700),
+        text(72, 582, 'Answer score · elapsed time · usage / trajectory · GPU memory', 16),
+        text(72, 605, 'JSON results → plot_results.py → five charts', 15, MUTED),
+        arrow('M169 422 V524', True),
+        text(182, 488, 'completion + timing', 15, MUTED),
+        arrow('M815 451 V567 H612', True),
+        text(724, 551, 'VRAM poll / 0.5 s', 15, MUTED, anchor='middle'),
+        rule(32, 650, 928),
+        text(32, 680, '* In the upstream implementation reviewed; dependency versions are not pinned here.', 16, MUTED),
+        text(32, 706, 'Solid arrows: calls and returned data. Dashed arrows: measurements collected by this repository.', 16, MUTED),
     ]
-
-    # Conference layer (pink, like InferenceSet)
-    parts += [
-        rect(340, 28, 1080, 132, PINK, PINK_STROKE, sw=2.6, r=20),
-        badge(372, 58, WHITE, PINK_STROKE, "+"),
-        txt(880, 64, "This repository", 24, 800, PINK_INK),
-        txt(880, 92, "Conference layer  ·  PyTorch Conference EU 2026", 14.5, 600, PINK_INK),
-        pill(390, 108, 300, 36, WHITE, PINK_STROKE, "run_benchmark.py", PINK_INK),
-        pill(720, 108, 300, 36, WHITE, PINK_STROKE, "plot_results.py  ·  poster", PINK_INK),
-        pill(1050, 108, 330, 36, WHITE, PINK_STROKE, "serve_model.sh  ·  setup", PINK_INK),
-    ]
-
-    # Metrics (orange, like AutoScaler)
-    parts += [
-        rect(1460, 40, 260, 108, ORANGE, ORANGE_STROKE, sw=2.2, r=16),
-        badge(1488, 68, WHITE, ORANGE_STROKE, "M"),
-        txt(1600, 78, "Metrics", 19, 800, ORANGE_INK),
-        txt(1600, 104, "Wall-clock  ·  VRAM", 13.5, 600, ORANGE_INK),
-        txt(1600, 126, "Tokens  ·  iters  ·  sub-calls", 13.5, 600, ORANGE_INK),
-    ]
-
-    # Down into runtime
-    parts += [
-        path("M 170 148 V 188 H 360", GREEN_STROKE, 2.2, "arr-g"),
-        line(880, 160, 880, 188, PINK_STROKE, 2.4, "arr-p"),
-        path("M 1590 148 V 188 H 1400", ORANGE_STROKE, 2.2, "arr-o", "6 4"),
-        txt(210, 176, "samples", 12, 700, GREEN_STROKE, "start"),
-        txt(1540, 176, "observe", 12, 700, ORANGE_STROKE, "end"),
-    ]
-
-    # Runtime group (like InferencePool)
-    parts += [
-        rect(40, 196, 1680, 500, GROUP, GROUP_STROKE, 2.0, 22),
-        txt(64, 226, "RLM Runtime", 14, 800, MUTED, "start"),
-        txt(186, 226, "upstream  ·  alexzhang13/rlm  (rlms)", 13, 600, "#808080", "start"),
-    ]
-
-    # Orchestrator
-    parts += [
-        rect(400, 248, 960, 88, PINK, PINK_STROKE, 2.4, 18),
-        badge(432, 276, WHITE, PINK_STROKE, "R"),
-        txt(880, 280, "RLM Orchestrator", 22, 800, PINK_INK),
-        txt(880, 308, "hist  →  generate  →  exec  →  trim  →  repeat until Final", 14, 600, PINK_INK),
-    ]
-    parts.append(line(880, 336, 880, 364, PINK_STROKE, 2.2, "arr-p"))
-
-    # Two green workspaces
-    parts += [
-        rect(72, 376, 720, 132, GREEN, GREEN_STROKE, 2.4, 18),
-        badge(104, 404, WHITE, GREEN_STROKE, "P"),
-        txt(432, 412, "Python REPL", 22, 800, GREEN_INK),
-        txt(432, 442, "Prompt P as a variable   ·   sub_RLM() hook", 14, 600, GREEN_INK),
-        txt(432, 466, "Peek  ·  grep  ·  chunk  ·  recurse  ·  set Final", 14, 600, GREEN_INK),
-        rect(968, 376, 720, 132, GREEN, GREEN_STROKE, 2.4, 18),
-        badge(1000, 404, WHITE, GREEN_STROKE, "L"),
-        txt(1328, 412, "Language Model", 22, 800, GREEN_INK),
-        txt(1328, 442, "Qwen3-8B   or   RLM-Qwen3-8B", 14, 600, GREEN_INK),
-        txt(1328, 466, "Sees hist only  ·  never the raw prompt P", 14, 600, GREEN_INK),
-    ]
-
-    # Loop arrows
-    parts += [
-        path("M 792 416 H 956", BLUE_STROKE, 2.4, "arr-b"),
-        path("M 956 468 H 792", GREEN_STROKE, 2.4, "arr-g"),
-        txt(874, 404, "metadata", 12, 800, BLUE_STROKE),
-        txt(874, 490, "Python code", 12, 800, GREEN_STROKE),
-    ]
-
-    parts += [
-        line(432, 508, 432, 536, GREEN_STROKE, 2.2, "arr-g"),
-        line(1328, 508, 1328, 536, GREEN_STROKE, 2.2, "arr-g"),
-    ]
-
-    # Blue workloads
-    parts += [
-        rect(72, 548, 720, 116, BLUE, BLUE_STROKE, 2.4, 18),
-        badge(104, 576, WHITE, BLUE_STROKE, "F"),
-        txt(432, 586, "REPL result", 20, 800, WHITE),
-        txt(432, 616, "Final set?   Yes → output    No → loop", 14, 600, "#E8F6FC"),
-        rect(968, 548, 720, 116, BLUE, BLUE_STROKE, 2.4, 18),
-        badge(1000, 576, WHITE, BLUE_STROKE, "V"),
-        txt(1328, 586, "vLLM inference", 20, 800, WHITE),
-        txt(1328, 616, "OpenAI HTTP   ·   localhost:8000/v1   ·   bf16", 14, 600, "#E8F6FC"),
-    ]
-    parts += [
-        path("M 792 606 H 956", ORANGE_STROKE, 2.0, "arr-o", "5 4"),
-        txt(874, 594, "sub_RLM()", 12, 800, ORANGE_STROKE),
-    ]
-
-    # Configs (purple, like NodePool)
-    parts += [
-        path("M 432 664 V 700 H 1328", PURPLE_STROKE, 2.2, None),
-        line(432, 700, 432, 724, PURPLE_STROKE, 2.2, "arr-u"),
-        line(880, 700, 880, 724, PURPLE_STROKE, 2.2, "arr-u"),
-        line(1328, 700, 1328, 724, PURPLE_STROKE, 2.2, "arr-u"),
-    ]
-
-    configs = [
-        (72, "baseline", "Prefix cache off", "1 sequential sub-call"),
-        (616, "prefix-cache", "Prefix cache on", "1 sequential sub-call"),
-        (1160, "prefix-cache-batched", "Prefix cache on", "4 parallel sub-calls"),
-    ]
-    for x, title, a, b in configs:
-        parts += [
-            rect(x, 736, 528, 100, PURPLE, PURPLE_STROKE, 2.4, 16),
-            txt(x + 264, 774, title, 20, 800, WHITE),
-            txt(x + 264, 804, f"{a}   ·   {b}", 13.5, 600, "#EEF0FF"),
-        ]
-
-    # Hardware bar
-    parts += [
-        line(432, 836, 432, 868, INK, 2.2, "arr"),
-        line(880, 836, 880, 868, INK, 2.2, "arr"),
-        line(1328, 836, 1328, 868, INK, 2.2, "arr"),
-        rect(40, 880, 1680, 124, WHITE, INK, 2.8, 18),
-        txt(880, 932, "NVIDIA H100  80GB", 28, 800),
-        txt(880, 972, "CUDA   ·   PyTorch   ·   vLLM   ·   bfloat16", 16, 600, MUTED),
-    ]
-
-    # Metrics dashed down the right, inside the canvas
-    parts += [
-        path("M 1704 148 V 606 H 1688", ORANGE_STROKE, 2.0, "arr-o", "6 4"),
-        txt(1696, 390, "metrics", 12, 700, ORANGE_STROKE, "end"),
-    ]
-
-    parts.append("</svg>")
-    render("\n".join(parts), "architecture", W, H)
+    return figure(733, 'Benchmark implementation and measurement boundaries',
+                  'OOLONG samples enter a sequential Python benchmark runner. It calls the upstream RLM runtime with a local REPL, 30 root iterations and max depth 1. Root and leaf sub-call requests share a vLLM endpoint running one checkpoint on one H100. The harness records scores, timing, usage and trajectory data, and polls device memory. Dashed arrows show measurement paths.', s)
 
 
-def loop_arch() -> None:
-    """Inference-loop diagram — same grammar as KAITO ragarch.png."""
-    W, H = 1400, 860
-    parts = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">',
-        defs(),
-        f'<rect width="{W}" height="{H}" fill="{BG}"/>',
-    ]
-
-    # User prompt
-    parts += [
-        rect(500, 28, 400, 72, WHITE, "#C0392B", 2.4, 16, "7 5"),
-        txt(700, 58, "User prompt P", 20, 800, "#C0392B"),
-        txt(700, 82, "can be millions of tokens", 13.5, 600, MUTED),
-        line(700, 100, 700, 132, INK, 2.2, "arr"),
-    ]
-
-    # REPL (green, large left)
-    parts += [
-        rect(48, 144, 620, 420, GREEN, GREEN_STROKE, 2.6, 22),
-        badge(80, 176, WHITE, GREEN_STROKE, "P"),
-        txt(358, 182, "Python REPL", 24, 800, GREEN_INK),
-    ]
-    items = [
-        ("1", "Store P as a string variable"),
-        ("2", "Register sub_RLM(query, slice)"),
-        ("3", "Execute generated Python"),
-        ("4", "Trim stdout to metadata"),
-        ("5", "Set Final when the answer is ready"),
-    ]
-    for i, (n, label) in enumerate(items):
-        y = 230 + i * 56
-        parts += [
-            f'<circle cx="96" cy="{y}" r="14" fill="{WHITE}" stroke="{GREEN_STROKE}" stroke-width="1.8"/>',
-            txt(96, y + 5, n, 13, 800, GREEN_STROKE),
-            txt(126, y + 5, label, 16, 600, GREEN_INK, "start"),
-        ]
-    parts.append(txt(358, 530, "Root LM never sees raw prompt tokens", 13.5, 700, GREEN_STROKE))
-
-    # LM (blue, large right)
-    parts += [
-        rect(732, 144, 620, 420, "#D6EFFF", BLUE_STROKE, 2.6, 22),
-        badge(764, 176, WHITE, BLUE_STROKE, "L"),
-        txt(1042, 182, "PyTorch  ·  Language Model", 22, 800, "#044868"),
-    ]
-    items2 = [
-        ("1", "model.generate(hist)"),
-        ("2", "Qwen3-8B  /  RLM-Qwen3-8B"),
-        ("3", "H100 GPU  ·  vLLM"),
-        ("4", "Returns Python code blocks"),
-        ("5", "Never sees the full prompt P"),
-    ]
-    for i, (n, label) in enumerate(items2):
-        y = 230 + i * 56
-        parts += [
-            f'<circle cx="780" cy="{y}" r="14" fill="{WHITE}" stroke="{BLUE_STROKE}" stroke-width="1.8"/>',
-            txt(780, y + 5, n, 13, 800, BLUE_STROKE),
-            txt(810, y + 5, label, 16, 600, "#044868", "start"),
-        ]
-    parts.append(txt(1042, 530, "Each call = one autoregressive pass", 13.5, 700, BLUE_STROKE))
-
-    # Cross arrows + LOOP badge
-    parts += [
-        path("M 668 280 H 720", INK, 2.4, "arr"),
-        path("M 720 428 H 668", INK, 2.4, "arr"),
-        txt(694, 264, "metadata", 12, 800, INK),
-        txt(694, 454, "code", 12, 800, INK),
-        f'<rect x="668" y="338" width="64" height="26" rx="13" fill="{PINK_STROKE}"/>',
-        txt(700, 356, "LOOP", 11, 800, WHITE),
-    ]
-
-    # Decision + output
-    parts += [
-        line(358, 564, 358, 596, INK, 2.2, "arr"),
-        rect(198, 608, 320, 56, WHITE, PINK_STROKE, 2.4, 28),
-        txt(358, 644, "Final set in REPL?", 16, 800, PINK_INK),
-        path("M 518 636 H 620", GREEN_STROKE, 2.4, "arr-g"),
-        txt(560, 624, "Yes", 12, 800, GREEN_STROKE),
-        rect(632, 608, 200, 56, GREEN, GREEN_STROKE, 2.4, 14),
-        txt(732, 644, "OUTPUT", 18, 800, GREEN_INK),
-        path("M 198 636 H 72 V 164 H 40", "#C0392B", 2.2, "arr", "6 4"),
-        txt(60, 400, "No", 12, 800, "#C0392B"),
-        txt(60, 416, "repeat", 12, 800, "#C0392B"),
-        rect(900, 600, 452, 80, ORANGE, ORANGE_STROKE, 2.2, 14, "5 4"),
-        txt(1126, 634, "sub_RLM() recursive calls", 16, 800, ORANGE_INK),
-        txt(1126, 660, "REPL code can spawn GPU passes in a loop", 13, 600, ORANGE_INK),
-        path("M 668 500 Q 780 580 900 640", ORANGE_STROKE, 1.8, "arr-o", "5 4"),
-    ]
-
-    # Caption bar
-    parts += [
-        rect(48, 732, 1304, 88, WHITE, GROUP_STROKE, 2.0, 16),
-        txt(700, 770, "Recursion is program control flow in the REPL, not extra transformer layers.", 16, 700),
-        txt(700, 798, "PyTorch / vLLM runs one generate() per root step and per sub-call.", 14, 600, MUTED),
-    ]
-
-    parts.append("</svg>")
-    render("\n".join(parts), "architecture-loop", W, H)
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--png', action='store_true', help='Also render 2x PNGs (requires CairoSVG)')
+    args = parser.parse_args()
+    for name, svg in [('architecture-loop', inference_loop()), ('architecture', architecture())]:
+        target = OUT / f'{name}.svg'
+        target.write_text(svg, encoding='utf-8')
+        print(f'Wrote {target.name}')
+        if args.png:
+            import cairosvg
+            cairosvg.svg2png(bytestring=svg.encode(), write_to=str(OUT / f'{name}.png'), scale=2)
+            print(f'Wrote {name}.png')
 
 
-def main() -> None:
-    system_arch()
-    loop_arch()
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
