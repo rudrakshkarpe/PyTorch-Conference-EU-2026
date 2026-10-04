@@ -47,7 +47,22 @@ def figure(height, title, description, content):
         f'<title id="title">{escape(title)}</title>',
         f'<desc id="desc">{escape(description)}</desc>',
         '<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#202b33"/></marker></defs>',
-        f'<rect width="960" height="{height}" fill="#ffffff"/>',
+        # Embedded SVGs inherit the viewer's preferred color scheme. Keep the
+        # outer canvas transparent and adapt labels, edges, and node fills.
+        '<style>@media (prefers-color-scheme: dark) {'
+        '[fill="#202b33"] {fill:#e6edf3}'
+        '[stroke="#202b33"] {stroke:#e6edf3}'
+        '[fill="#56646f"] {fill:#aab7c4}'
+        '[stroke="#c7cfd4"] {stroke:#465462}'
+        '[fill="#285e83"] {fill:#91c5ed}'
+        '[stroke="#285e83"] {stroke:#6b9cbe}'
+        '[fill="#eef5fa"] {fill:#172b3b}'
+        '[fill="#326754"] {fill:#9cd6bc}'
+        '[stroke="#326754"] {stroke:#649b82}'
+        '[fill="#eff6f1"] {fill:#172e25}'
+        '[fill="#fff"] {fill:#161b22}'
+        '[fill="#fafbfc"] {fill:#111820}'
+        '}</style>',
         *content, '</svg>',
     ]) + '\n'
 

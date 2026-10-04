@@ -2,7 +2,7 @@
 <title id="title">RLM inference loop</title>
 <desc id="desc">Long input is loaded into persistent REPL state. The root model receives metadata, generates code, and receives bounded feedback. Code can make sub-calls on selected text and retain their results. A final answer is returned from state. This is the paper’s conceptual algorithm, not a claim of unlimited recursion in this benchmark.</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#202b33"/></marker></defs>
-<rect width="960" height="688" fill="#ffffff"/>
+<style>@media (prefers-color-scheme: dark) {[fill="#202b33"] {fill:#e6edf3}[stroke="#202b33"] {stroke:#e6edf3}[fill="#56646f"] {fill:#aab7c4}[stroke="#c7cfd4"] {stroke:#465462}[fill="#285e83"] {fill:#91c5ed}[stroke="#285e83"] {stroke:#6b9cbe}[fill="#eef5fa"] {fill:#172b3b}[fill="#326754"] {fill:#9cd6bc}[stroke="#326754"] {stroke:#649b82}[fill="#eff6f1"] {fill:#172e25}[fill="#fff"] {fill:#161b22}[fill="#fafbfc"] {fill:#111820}}</style>
 <text x="32" y="35" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#56646f" text-anchor="start">01 / RLM INFERENCE</text>
 <text x="32" y="70" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#202b33" text-anchor="start">Long input lives in the program’s state</text>
 <text x="32" y="99" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="400" fill="#56646f" text-anchor="start">Conceptual loop from Zhang et al., §2 / Algorithm 1. Serving details are in Figure 2.</text>
