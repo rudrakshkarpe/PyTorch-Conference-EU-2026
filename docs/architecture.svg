@@ -2,7 +2,7 @@
 <title id="title">Benchmark implementation and measurement boundaries</title>
 <desc id="desc">OOLONG samples enter a sequential Python benchmark runner. It calls the upstream RLM runtime with a local REPL, 30 root iterations and max depth 1. Root and leaf sub-call requests share a vLLM endpoint running one checkpoint on one H100. The harness records scores, timing, usage and trajectory data, and polls device memory. Dashed arrows show measurement paths.</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#202b33"/></marker></defs>
-<rect width="960" height="733" fill="#ffffff"/>
+<style>@media (prefers-color-scheme: dark) {[fill="#202b33"] {fill:#e6edf3}[stroke="#202b33"] {stroke:#e6edf3}[fill="#56646f"] {fill:#aab7c4}[stroke="#c7cfd4"] {stroke:#465462}[fill="#285e83"] {fill:#91c5ed}[stroke="#285e83"] {stroke:#6b9cbe}[fill="#eef5fa"] {fill:#172b3b}[fill="#326754"] {fill:#9cd6bc}[stroke="#326754"] {stroke:#649b82}[fill="#eff6f1"] {fill:#172e25}[fill="#fff"] {fill:#161b22}[fill="#fafbfc"] {fill:#111820}}</style>
 <text x="32" y="35" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#56646f" text-anchor="start">02 / BENCHMARK IMPLEMENTATION</text>
 <text x="32" y="70" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#202b33" text-anchor="start">One Python harness, one model server</text>
 <text x="32" y="99" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="400" fill="#56646f" text-anchor="start">Root and sub-call requests use the same configured endpoint and checkpoint.</text>

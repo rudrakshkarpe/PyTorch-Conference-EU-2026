@@ -46,4 +46,4 @@ To also render the checked-in 2× PNG exports, install CairoSVG and its Cairo sy
 python3 docs/generate_architecture.py --png
 ```
 
-Both SVGs have a white canvas, embedded text, accessible titles and descriptions, and no external fonts or images. The README embeds SVG for sharp rendering at different widths; PNGs remain available for slides and other tools. Inspect both figures after editing, especially edge labels, return paths, and the distinction between the conceptual loop and configured depth.
+Both SVGs have a transparent canvas, embedded text, accessible titles and descriptions, and no external fonts or images. An embedded `prefers-color-scheme: dark` rule adapts text, lines, and node fills for dark backgrounds. PNG exports also have a transparent canvas, with the default light-theme palette; they do not switch themes. The README embeds SVG for sharp rendering at different widths; PNGs remain available for slides and other tools. Inspect both figures after editing, especially edge labels, return paths, and the distinction between the conceptual loop and configured depth.
